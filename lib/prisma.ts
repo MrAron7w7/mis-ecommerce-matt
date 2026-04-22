@@ -4,10 +4,12 @@ const globalForPrisma = global as unknown as {
   prisma: PrismaClient; 
 }; 
 const adapter = new PrismaMariaDb({
-    //host: "localhost",
-    host: process.env.DATABASE_URL,
-    port: 3306,
-    connectionLimit: 5,
+  host: process.env.DATABASE_HOST ?? "localhost",
+  user: process.env.DATABASE_USER ?? "root",
+  password: process.env.DATABASE_PASSWORD ?? "",
+  database: process.env.DATABASE_NAME ?? "",
+  port: Number(process.env.DATABASE_PORT ?? 3306),
+  connectionLimit: 5,
 }); 
 const prisma =
   globalForPrisma.prisma ||

@@ -29,109 +29,78 @@ enum OrderStatus {
 }
 
 ////////////////////
-/// USERS
+/// BETTER AUTH TABLES
 ////////////////////
 
 model User {
-  id              BigInt    @id @default(autoincrement())
-  name            String
-  email           String    @unique
-  emailVerifiedAt DateTime?
-  password        String
-  rememberToken   String?
-  role            Role      @default(USER)
+  id            String   @id
+  name          String   @db.Text
+  email         String   @unique
+  emailVerified Boolean  @default(false)
+  image         String?  @db.Text
+  role          Role     @default(USER) // ← tuyo
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  reviews  Review[]
-  carts    Cart[]
-  orders   Order[]
+  // Better Auth relations
   sessions Session[]
-}
+  accounts Account[]
 
-////////////////////
-/// AUTH / SYSTEM
-////////////////////
+  // Tus relations
+  reviews Review[]
+  carts   Cart[]
+  orders  Order[]
 
-model PasswordResetToken {
-  email     String    @id
-  token     String
-  createdAt DateTime?
+  @@map("user")
 }
 
 model Session {
-  id           String  @id
-  userId       BigInt?
-  ipAddress    String?
-  userAgent    String?
-  payload      String  @db.LongText
-  lastActivity Int
-
-  user User? @relation(fields: [userId], references: [id])
-}
-
-////////////////////
-/// CACHE & JOBS
-////////////////////
-
-model Cache {
-  key        String @id
-  value      String @db.MediumText
-  expiration Int
-}
-
-model CacheLock {
-  key        String @id
-  owner      String
-  expiration Int
-}
-
-model Job {
-  id          BigInt @id @default(autoincrement())
-  queue       String
-  payload     String @db.LongText
-  attempts    Int
-  reservedAt  Int?
-  availableAt Int
-  createdAt   Int
-}
-
-model JobBatch {
-  id           String  @id
-  name         String
-  totalJobs    Int
-  pendingJobs  Int
-  failedJobs   Int
-  failedJobIds String  @db.LongText
-  options      String? @db.MediumText
-  cancelledAt  Int?
-  createdAt    Int
-  finishedAt   Int?
-}
-
-model FailedJob {
-  id         BigInt   @id @default(autoincrement())
-  uuid       String   @unique
-  connection String
-  queue      String
-  payload    String   @db.LongText
-  exception  String   @db.LongText
-  failedAt   DateTime @default(now())
-}
-
-model PersonalAccessToken {
-  id            BigInt    @id @default(autoincrement())
-  tokenableType String
-  tokenableId   BigInt
-  name          String
-  token         String    @unique
-  abilities     String?
-  lastUsedAt    DateTime?
-  expiresAt     DateTime?
-
+  id        String   @id
+  expiresAt DateTime
+  token     String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  ipAddress String?  @db.Text
+  userAgent String?  @db.Text
+  userId    String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId(length: 191)])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String    @db.Text
+  providerId            String    @db.Text
+  userId                String
+  accessToken           String?   @db.Text
+  refreshToken          String?   @db.Text
+  idToken               String?   @db.Text
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?   @db.Text
+  password              String?   @db.Text
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId(length: 191)])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String   @db.Text
+  value      String   @db.Text
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier(length: 191)])
+  @@map("verification")
 }
 
 ////////////////////
@@ -174,16 +143,14 @@ model Product {
   stock       Int     @default(0)
   isActive    Boolean @default(true)
   imageUrl    String?
-
-  categoryId BigInt
-  supplierId BigInt?
+  categoryId  BigInt
+  supplierId  BigInt?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  category Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  supplier Supplier? @relation(fields: [supplierId], references: [id], onDelete: SetNull)
-
+  category   Category         @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  supplier   Supplier?        @relation(fields: [supplierId], references: [id], onDelete: SetNull)
   variants   ProductVariant[]
   reviews    Review[]
   cartItems  CartItem[]
@@ -191,10 +158,9 @@ model Product {
 }
 
 model ProductVariant {
-  id    BigInt @id @default(autoincrement())
-  type  String
-  value String
-
+  id        BigInt @id @default(autoincrement())
+  type      String
+  value     String
   productId BigInt
 
   createdAt DateTime @default(now())
@@ -211,7 +177,7 @@ model ProductVariant {
 
 model Review {
   id         BigInt  @id @default(autoincrement())
-  userId     BigInt
+  userId     String // ← String ahora (era BigInt)
   productId  BigInt
   rating     Int
   comment    String?
@@ -232,7 +198,7 @@ model Review {
 
 model Cart {
   id     BigInt  @id @default(autoincrement())
-  userId BigInt
+  userId String // ← String ahora (era BigInt)
   total  Decimal @default(0) @db.Decimal(10, 2)
 
   createdAt DateTime @default(now())
@@ -266,7 +232,7 @@ model CartItem {
 model Order {
   id                String      @id @default(uuid())
   orderNumber       String      @unique
-  userId            BigInt
+  userId            String // ← String ahora (era BigInt)
   status            OrderStatus @default(PENDING)
   total             Decimal     @db.Decimal(10, 2)
   shippingAddress   String
