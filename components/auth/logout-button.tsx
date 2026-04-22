@@ -17,7 +17,7 @@ export function LogoutButton() {
       return;
     }
 
-    router.push('/iniciar-sesion');
+    router.push('/');
     router.refresh();
   };
 
