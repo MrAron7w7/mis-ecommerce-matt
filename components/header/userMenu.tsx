@@ -1,37 +1,82 @@
+// components/header/UserMenu.tsx
 'use client';
 
 import { useState } from 'react';
-import AuthModal from './authModal';
-import { User } from 'lucide-react';
+import { User, ChevronDown } from 'lucide-react';
+import UserDropdown from './UserDropdown';
+import { useModal } from './ModalProvider';
 
-export default function UserMenu({ session }: any) {
-  const [open, setOpen] = useState(false);
-  const [action, setAction] = useState<'switch' | 'logout'>('switch');
+type SessionUser = {
+  user?: {
+    id?: string;
+    name?: string;
+    lastName?: string | null;
+    email?: string;
+    role?: 'USER' | 'SELLER' | 'ADMIN';
+    image?: string;
+  };
+};
 
-  const handleOpenModal = () => {
-    // lógica clara:
-    // si hay sesión → logout
-    // si no hay sesión → login
-    setAction(session ? 'logout' : 'switch');
-    setOpen(true);
+type UserMenuProps = {
+  session: SessionUser | null;
+};
+
+export default function UserMenu({ session }: UserMenuProps) {
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const { openAuthModal } = useModal();
+
+  const user = session?.user;
+  const isAuthenticated = !!user;
+
+  const handleUserClick = () => {
+    if (isAuthenticated) {
+      setIsDropdownOpen(!isDropdownOpen);
+    } else {
+      openAuthModal('login');
+    }
   };
 
+  const handleLogoutClick = () => {
+    openAuthModal('logout');
+    setIsDropdownOpen(false);
+  };
+
+  // Mostrar nombre completo o solo nombre
+  const displayName = user?.lastName ? `${user.name} ${user.lastName}` : user?.name;
+
   return (
-    <>
-      {/* USER BUTTON */}
+    <div className="relative">
       <button
-        onClick={handleOpenModal}
-        className="flex items-center gap-2 hover:opacity-70 transition"
+        onClick={handleUserClick}
+        className="flex items-center gap-2 hover:opacity-70 transition px-2 py-1 rounded-lg hover:bg-gray-100"
+        aria-label="Menú de usuario"
       >
         <User size={20} />
-
-        {session?.user?.name && (
-          <span className="hidden md:block text-xs">{session.user.name}</span>
+        {isAuthenticated && displayName && (
+          <>
+            <span className="hidden md:block text-sm font-medium text-gray-700">
+              {displayName.split(' ')[0]}
+            </span>
+            <ChevronDown
+              size={16}
+              className={`hidden md:block transition-transform duration-200 ${
+                isDropdownOpen ? 'rotate-180' : ''
+              }`}
+            />
+          </>
         )}
       </button>
 
-      {/* MODAL */}
-      <AuthModal open={open} setOpen={setOpen} action={action} />
-    </>
+      {isAuthenticated && isDropdownOpen && (
+        <UserDropdown
+          user={{
+            ...user,
+            name: displayName || user.name || '',
+          }}
+          onClose={() => setIsDropdownOpen(false)}
+          onLogout={handleLogoutClick}
+        />
+      )}
+    </div>
   );
 }

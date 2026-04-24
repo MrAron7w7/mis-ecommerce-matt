@@ -1,15 +1,38 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
-import { Heart, Search, ShoppingCart, Menu, X } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Search, ShoppingCart, Menu, X } from 'lucide-react';
 import UserMenu from './userMenu';
+import SearchModal from './SearchModal';
+import { PublicProduct } from '@/actions/user/product.user.action';
 
-export default function NavbarClient({ session }: { session: any }) {
+type SessionUser = {
+  user?: {
+    id?: string;
+    name?: string;
+    lastName?: string | null;
+    email?: string;
+    role?: 'USER' | 'SELLER' | 'ADMIN';
+    image?: string;
+  };
+};
+
+type NavBarClientProps = {
+  session: SessionUser | null;
+  products: PublicProduct[]; // Recibimos los productos desde el server
+};
+
+export default function NavBarClient({ session, products }: NavBarClientProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const pathname = usePathname();
+
+  // Cerrar search modal al cambiar de ruta
+  useEffect(() => {
+    setIsSearchOpen(false);
+  }, [pathname]);
 
   return (
     <>
@@ -18,12 +41,10 @@ export default function NavbarClient({ session }: { session: any }) {
           <div className="flex items-center justify-between h-16 lg:h-20">
             {/* Logo */}
             <Link href="/" className="flex-shrink-0">
-              <Image
-                src="/logo.png"
+              <img
+                src="img/inicio/logo.png"
                 alt="Logo"
-                width={100}
-                height={33}
-                className="w-auto h-8 lg:h-10"
+                className="w-[100px] h-[50px] object-contain"
               />
             </Link>
 
@@ -48,13 +69,14 @@ export default function NavbarClient({ session }: { session: any }) {
 
             {/* Right Icons */}
             <div className="flex items-center space-x-4 lg:space-x-6">
-              <button className="hidden sm:block hover:opacity-60 transition">
+              {/* Botón de búsqueda - Abre modal */}
+              <button
+                onClick={() => setIsSearchOpen(true)}
+                className="hidden sm:block hover:opacity-60 transition"
+                aria-label="Buscar productos"
+              >
                 <Search size={20} />
               </button>
-
-              <Link href="/favorites" className="hover:opacity-60 transition">
-                <Heart size={20} />
-              </Link>
 
               <Link href="/cart" className="relative hover:opacity-60 transition">
                 <ShoppingCart size={20} />
@@ -69,6 +91,7 @@ export default function NavbarClient({ session }: { session: any }) {
               <button
                 onClick={() => setIsMobileMenuOpen(true)}
                 className="lg:hidden p-2 hover:bg-gray-100 rounded-lg transition"
+                aria-label="Abrir menú"
               >
                 <Menu size={22} />
               </button>
@@ -81,32 +104,45 @@ export default function NavbarClient({ session }: { session: any }) {
       {isMobileMenuOpen && (
         <MobileDrawer onClose={() => setIsMobileMenuOpen(false)} pathname={pathname} />
       )}
+
+      {/* Search Modal */}
+      <SearchModal
+        isOpen={isSearchOpen}
+        onClose={() => setIsSearchOpen(false)}
+        products={products}
+      />
     </>
   );
 }
 
-// Helper components
-function NavLink({
-  href,
-  pathname,
-  children,
-}: {
+// Helper component for navigation links
+type NavLinkProps = {
   href: string;
   pathname: string;
   children: React.ReactNode;
-}) {
+};
+
+function NavLink({ href, pathname, children }: NavLinkProps) {
   const isActive = pathname === href;
   return (
     <Link
       href={href}
-      className={`text-sm font-medium transition ${isActive ? 'text-black' : 'text-gray-600 hover:text-black'}`}
+      className={`text-sm font-medium transition ${
+        isActive ? 'text-black' : 'text-gray-600 hover:text-black'
+      }`}
     >
       {children}
     </Link>
   );
 }
 
-function MobileDrawer({ onClose, pathname }: { onClose: () => void; pathname: string }) {
+// Mobile drawer component
+type MobileDrawerProps = {
+  onClose: () => void;
+  pathname: string;
+};
+
+function MobileDrawer({ onClose, pathname }: MobileDrawerProps) {
   const menuItems = [
     { href: '/productos', label: 'Shop' },
     { href: '/new', label: 'New Arrivals' },
@@ -121,7 +157,7 @@ function MobileDrawer({ onClose, pathname }: { onClose: () => void; pathname: st
       <div className="fixed inset-0 bg-black/50 z-50" onClick={onClose} />
       <div className="fixed right-0 top-0 bottom-0 w-80 bg-white z-50 shadow-xl animate-slide-in">
         <div className="flex justify-between items-center p-4 border-b">
-          <Image src="/logo.png" alt="Logo" width={80} height={26} />
+          <img src="img/inicio/logo.png" alt="Logo" className="w-[80px] h-[40px] object-contain" />
           <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg">
             <X size={22} />
           </button>

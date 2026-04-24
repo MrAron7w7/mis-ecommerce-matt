@@ -28,19 +28,30 @@ enum OrderStatus {
   REJECTED
 }
 
+enum DocumentType {
+  DNI
+  RUC
+  CE
+  PASAPORTE
+}
+
 ////////////////////
 /// BETTER AUTH TABLES
 ////////////////////
 
 model User {
-  id            String   @id
-  name          String   @db.Text
-  email         String   @unique
-  emailVerified Boolean  @default(false)
-  image         String?  @db.Text
-  role          Role     @default(USER)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id             String        @id
+  name           String        @db.Text
+  lastName       String?       @db.Text
+  email          String        @unique
+  emailVerified  Boolean       @default(false)
+  image          String?       @db.Text
+  role           Role          @default(USER)
+  documentType   DocumentType?
+  documentNumber String?       @unique
+  phone          String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
 
   // Better Auth relations
   sessions Session[]

@@ -10,11 +10,9 @@ import {
   Shield,
   RefreshCw,
   Star,
-  TrendingUp,
   Clock,
   ChevronRight,
   ArrowRight,
-  User,
 } from 'lucide-react';
 
 export const metadata: Metadata = {

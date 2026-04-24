@@ -63,7 +63,7 @@ export async function getPublicProductBySlug(slug: string): Promise<PublicProduc
     where: {
       slug,
       isActive: true,
-      stock: { gt: 0 },
+      //stock: { gt: 0 },
     },
     include: {
       category: {

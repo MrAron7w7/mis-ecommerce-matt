@@ -1,87 +1,36 @@
-// components/user/productos/ProductCard.tsx (actualizado)
 'use client';
 
 import { Heart } from 'lucide-react';
 import { useState } from 'react';
 import Image from 'next/image';
-import QuickViewModal from './QuickViewModal';
+import Link from 'next/link';
 import { PublicProduct } from '@/actions/user/product.user.action';
 
-export default function ProductCard({
-  product,
-  viewMode = 'grid',
-}: {
+type ProductCardProps = {
   product: PublicProduct;
-  viewMode?: 'grid' | 'list';
-}) {
+};
+
+export default function ProductCard({ product }: ProductCardProps) {
   const [liked, setLiked] = useState(false);
   const [hovered, setHovered] = useState(false);
-  const [showQuickView, setShowQuickView] = useState(false);
 
-  if (viewMode === 'list') {
-    return (
-      <>
-        <div
-          className="flex gap-4 p-4 border border-gray-100 rounded-lg hover:shadow-md transition-all cursor-pointer group"
-          onMouseEnter={() => setHovered(true)}
-          onMouseLeave={() => setHovered(false)}
-        >
-          <div className="relative w-32 h-32 flex-shrink-0 overflow-hidden rounded-md bg-gray-100">
-            {product.imageUrl ? (
-              <Image src={product.imageUrl} alt={product.name} fill className="object-cover" />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">
-                Sin imagen
-              </div>
-            )}
-          </div>
-          <div className="flex-1 flex flex-col justify-between">
-            <div>
-              <h3 className="font-medium text-gray-900">{product.name}</h3>
-              <p className="text-sm text-gray-500 mt-1">${product.price}</p>
-              {product.colors.length > 0 && (
-                <div className="flex gap-1.5 mt-2">
-                  {product.colors.slice(0, 3).map((color, i) => (
-                    <span
-                      key={i}
-                      className="w-4 h-4 rounded-full border border-gray-300 shadow-sm"
-                      style={{ backgroundColor: color }}
-                    />
-                  ))}
-                </div>
-              )}
-            </div>
-            <button
-              onClick={() => setShowQuickView(true)}
-              className="mt-3 w-full py-2 bg-gray-900 text-white text-sm rounded-md opacity-0 group-hover:opacity-100 transition-opacity"
-            >
-              Vista rápida
-            </button>
-          </div>
-        </div>
-        <QuickViewModal
-          product={product}
-          isOpen={showQuickView}
-          onClose={() => setShowQuickView(false)}
-        />
-      </>
-    );
-  }
+  console.log('ProductCard:', product.slug);
 
   return (
-    <>
-      <div
-        className="group relative flex flex-col gap-2 cursor-pointer"
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-      >
-        <div className="relative overflow-hidden aspect-[3/4] w-full rounded-lg bg-gray-100">
+    <div
+      className="group relative flex flex-col gap-2"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      <Link href={`/productos/${product.slug}`} className="block">
+        <div className="relative overflow-hidden aspect-[3/4] w-full rounded-xl bg-gray-100">
           {product.imageUrl ? (
             <Image
               src={product.imageUrl}
               alt={product.name}
               fill
-              className="object-cover transition-transform duration-300 group-hover:scale-105"
+              className="object-cover transition-transform duration-500 group-hover:scale-105"
+              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">
@@ -89,61 +38,62 @@ export default function ProductCard({
             </div>
           )}
 
+          {product.stock < 5 && product.stock > 0 && (
+            <div className="absolute top-3 left-3 z-10 bg-orange-500 text-white text-xs px-2 py-1 rounded-full">
+              ¡Últimas {product.stock}!
+            </div>
+          )}
+
+          {product.stock === 0 && (
+            <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-10">
+              <span className="bg-white text-gray-900 px-3 py-1 rounded-full text-sm font-medium">
+                Agotado
+              </span>
+            </div>
+          )}
+
+          {/* Wishlist Button */}
           <button
-            onClick={() => setLiked(!liked)}
-            className="absolute top-3 right-3 z-10 transition-all duration-300 hover:scale-110"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setLiked(!liked);
+            }}
+            className="absolute top-3 right-3 z-10 bg-white/90 backdrop-blur-sm rounded-full p-2 transition-all hover:scale-110 shadow-sm"
+            aria-label="Agregar a favoritos"
           >
-            <Heart
-              size={20}
-              className={`transition-all duration-300 ${
-                liked ? 'fill-gray-900 text-gray-900' : 'text-gray-600 hover:text-gray-900'
-              }`}
-            />
-          </button>
-          <button
-            onClick={() => setShowQuickView(true)}
-            className={`
-              absolute inset-x-4 bottom-4 py-2.5 bg-white text-gray-900 text-sm font-medium rounded-full
-              transition-all duration-300 shadow-md hover:shadow-lg
-              ${hovered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}
-            `}
-          >
-            Vista rápida
+            <Heart size={16} className={liked ? 'fill-gray-900 text-gray-900' : 'text-gray-600'} />
           </button>
         </div>
 
-        {product.variants.length > 0 && (
-          <div className="mt-1 flex gap-1">
-            {product.variants.slice(0, 2).map((variant, i) => (
-              <span key={i} className="text-[15px] text-gray-400">
-                {variant.type}: {variant.value}
-                {i < Math.min(product.variants.length, 2) - 1 && ' • '}
-              </span>
-            ))}
-          </div>
-        )}
-
-        <div className="flex flex-col gap-0.5 px-0.5">
-          <p className="text-sm font-light text-gray-800 tracking-wide leading-snug hover:text-gray-600 transition-colors">
+        {/* Product Info */}
+        <div className="mt-3 space-y-1">
+          <p className="text-xs text-gray-400 uppercase tracking-wider">{product.category}</p>
+          <p className="text-sm font-medium text-gray-800 hover:text-gray-600 transition-colors line-clamp-2">
             {product.name}
           </p>
           <div className="flex items-center gap-2">
-            <p className="text-sm text-gray-500">${product.price}</p>
-            {product.stock < 5 && product.stock > 0 && (
-              <span className="text-xs text-orange-600 bg-orange-50 px-1.5 py-0.5 rounded">
-                ¡Últimas unidades!
-              </span>
-            )}
+            <span className="text-base font-semibold text-gray-900">${product.price}</span>
           </div>
-        </div>
-      </div>
 
-      <QuickViewModal
-        key={product.id}
-        product={product}
-        isOpen={showQuickView}
-        onClose={() => setShowQuickView(false)}
-      />
-    </>
+          {/* Colors preview */}
+          {product.colors && product.colors.length > 0 && (
+            <div className="flex gap-1.5 mt-2">
+              {product.colors.slice(0, 3).map((color, i) => (
+                <span
+                  key={i}
+                  className="w-3 h-3 rounded-full border border-gray-200"
+                  style={{ backgroundColor: color }}
+                  title={color}
+                />
+              ))}
+              {product.colors.length > 3 && (
+                <span className="text-[10px] text-gray-400">+{product.colors.length - 3}</span>
+              )}
+            </div>
+          )}
+        </div>
+      </Link>
+    </div>
   );
 }

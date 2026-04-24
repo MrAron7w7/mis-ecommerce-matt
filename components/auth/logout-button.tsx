@@ -1,18 +1,18 @@
 'use client';
 
-import { logoutAction } from '@/actions/auth/auth.action';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { logoutAction } from '@/actions/auth/auth.action';
 
-type Props = {
+type LogoutButtonProps = {
   onSuccess?: () => void;
 };
 
-export function LogoutButton({ onSuccess }: Props) {
+export default function LogoutButton({ onSuccess }: LogoutButtonProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogout = async (): Promise<void> => {
+  const handleLogout = async () => {
     setIsLoading(true);
     const result = await logoutAction();
 
@@ -30,9 +30,9 @@ export function LogoutButton({ onSuccess }: Props) {
     <button
       onClick={handleLogout}
       disabled={isLoading}
-      className="bg-red-500 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+      className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition disabled:opacity-50 font-medium"
     >
-      {isLoading ? 'Cerrando sesión...' : 'Cerrar sesión'}
+      {isLoading ? 'Cerrando...' : 'Cerrar sesión'}
     </button>
   );
 }
