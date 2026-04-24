@@ -4,7 +4,11 @@ import { logoutAction } from '@/actions/auth/auth.action';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
-export function LogoutButton() {
+type Props = {
+  onSuccess?: () => void;
+};
+
+export function LogoutButton({ onSuccess }: Props) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -17,6 +21,7 @@ export function LogoutButton() {
       return;
     }
 
+    onSuccess?.();
     router.push('/');
     router.refresh();
   };
