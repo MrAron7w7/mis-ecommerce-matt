@@ -12,22 +12,18 @@ export async function getSession() {
 
 export async function requireSession() {
   const session = await getSession();
-  if (!session) throw new Error("No autenticado");
+  if (!session) redirect("/iniciar-sesion");
   return session;
 }
 
 export async function requireRole(roles: Role[]) {
   const session = await getSession();
 
-  if (!session) {
-    throw new Error("No autenticado");
-  }
+  if (!session) redirect("/iniciar-sesion")
 
   const userRole = session.user.role as Role | undefined;
 
-  if (!userRole || !roles.includes(userRole)) {
-    redirect("/");
-  }
+  if (!userRole || !roles.includes(userRole)) redirect("/");
 
   return session;
 }

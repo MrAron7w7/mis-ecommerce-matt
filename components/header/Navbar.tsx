@@ -16,7 +16,7 @@ export default async function Navbar() {
         </Link>
 
         <div className="hidden md:flex gap-8 text-sm font-medium">
-          <Link href="/shop" className="hover:opacity-60">
+          <Link href="/productos" className="hover:opacity-60">
             Shop
           </Link>
           <Link href="/new" className="hover:opacity-60">
