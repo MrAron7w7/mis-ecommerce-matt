@@ -1,11 +1,14 @@
-import React from 'react';
+import { getSellerProducts } from '@/actions/seller/product.seller.action';
+import SellerProductsClient from '@/components/seller/productos/SellerProductsClient';
+import { requireRole } from '@/lib/helpers/session';
+import { redirect } from 'next/navigation';
 
-function page() {
-  return (
-    <div>
-      <h1>Pagina de seller productos</h1>
-    </div>
-  );
+export default async function SellerProductsPage() {
+  await requireRole(['SELLER']);
+
+  const result = await getSellerProducts();
+
+  if (!result.success) redirect('/');
+
+  return <SellerProductsClient products={result.data} />;
 }
-
-export default page;

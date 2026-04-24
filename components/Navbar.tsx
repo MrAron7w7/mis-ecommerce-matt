@@ -4,6 +4,8 @@ import { getSession } from '@/lib/helpers/session';
 
 export default async function Navbar() {
   const session = await getSession();
+  const isAdmin = session?.user?.role === 'ADMIN';
+  const isSeller = session?.user?.role === 'SELLER';
 
   return (
     <nav className="flex justify-between p-4 border-b">
@@ -13,6 +15,17 @@ export default async function Navbar() {
 
       {session ? (
         <div className="flex items-center gap-4">
+          {isAdmin && (
+            <Link href="/admin">
+              <button>Admin</button>
+            </Link>
+          )}
+          {isSeller && (
+            <Link href="/seller">
+              <button>Seller</button>
+            </Link>
+          )}
+
           <span>{session.user.name}</span>
           <LogoutButton />
         </div>

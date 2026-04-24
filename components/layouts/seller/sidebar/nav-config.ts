@@ -18,7 +18,7 @@ export interface NavItem {
 
 export const primaryNavItems: NavItem[] = [
   { name: 'Dashboard', path: '/seller', icon: LayoutDashboard, badge: null },
-  { name: 'Productos', path: '/seller/productos', icon: Package, badge: '128' },
+  { name: 'Productos', path: '/seller/productos', icon: Package, badge: null },
   { name: 'Categorías', path: '/seller/categorias', icon: Tags, badge: null },
   { name: 'Órdenes', path: '/seller/ordenes', icon: CreditCard, badge: null },
 ];

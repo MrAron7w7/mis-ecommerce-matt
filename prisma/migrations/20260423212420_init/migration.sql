@@ -97,13 +97,14 @@ CREATE TABLE `Product` (
     `id` BIGINT NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(191) NOT NULL,
     `slug` VARCHAR(191) NOT NULL,
-    `description` VARCHAR(191) NULL,
+    `description` TEXT NULL,
     `price` DECIMAL(10, 2) NOT NULL,
     `stock` INTEGER NOT NULL DEFAULT 0,
     `isActive` BOOLEAN NOT NULL DEFAULT true,
-    `imageUrl` VARCHAR(191) NULL,
+    `imageUrl` TEXT NULL,
     `categoryId` BIGINT NOT NULL,
     `supplierId` BIGINT NULL,
+    `sellerId` VARCHAR(191) NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
 
@@ -131,7 +132,7 @@ CREATE TABLE `Review` (
     `userId` VARCHAR(191) NOT NULL,
     `productId` BIGINT NOT NULL,
     `rating` INTEGER NOT NULL,
-    `comment` VARCHAR(191) NULL,
+    `comment` TEXT NULL,
     `isVerified` BOOLEAN NOT NULL DEFAULT false,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
@@ -173,9 +174,9 @@ CREATE TABLE `Order` (
     `userId` VARCHAR(191) NOT NULL,
     `status` ENUM('PENDING', 'ACCEPTED', 'REJECTED') NOT NULL DEFAULT 'PENDING',
     `total` DECIMAL(10, 2) NOT NULL,
-    `shippingAddress` VARCHAR(191) NOT NULL,
+    `shippingAddress` TEXT NOT NULL,
     `paymentMethod` VARCHAR(191) NULL,
-    `paymentReceiptUrl` VARCHAR(191) NULL,
+    `paymentReceiptUrl` TEXT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
 
@@ -262,6 +263,9 @@ ALTER TABLE `Product` ADD CONSTRAINT `Product_categoryId_fkey` FOREIGN KEY (`cat
 
 -- AddForeignKey
 ALTER TABLE `Product` ADD CONSTRAINT `Product_supplierId_fkey` FOREIGN KEY (`supplierId`) REFERENCES `Supplier`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `Product` ADD CONSTRAINT `Product_sellerId_fkey` FOREIGN KEY (`sellerId`) REFERENCES `user`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `ProductVariant` ADD CONSTRAINT `ProductVariant_productId_fkey` FOREIGN KEY (`productId`) REFERENCES `Product`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;

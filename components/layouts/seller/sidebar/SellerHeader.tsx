@@ -30,7 +30,6 @@ function getInitials(name: string) {
 }
 
 export function SellerHeader({ onOpenMobileSidebar, user }: SellerHeaderProps) {
-  console.log('user', user);
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-30">
       <div className="flex items-center justify-between px-6 py-3">

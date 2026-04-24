@@ -38,7 +38,7 @@ model User {
   email         String   @unique
   emailVerified Boolean  @default(false)
   image         String?  @db.Text
-  role          Role     @default(USER) // ← tuyo
+  role          Role     @default(USER)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
@@ -47,9 +47,10 @@ model User {
   accounts Account[]
 
   // Tus relations
-  reviews Review[]
-  carts   Cart[]
-  orders  Order[]
+  reviews  Review[]
+  carts    Cart[]
+  orders   Order[]
+  products Product[] @relation("SellerProducts") // ← NUEVO
 
   @@map("user")
 }
@@ -138,19 +139,21 @@ model Product {
   id          BigInt  @id @default(autoincrement())
   name        String  @unique
   slug        String  @unique
-  description String?
+  description String? @db.Text
   price       Decimal @db.Decimal(10, 2)
   stock       Int     @default(0)
   isActive    Boolean @default(true)
-  imageUrl    String?
+  imageUrl    String? @db.Text
   categoryId  BigInt
-  supplierId  BigInt?
+  supplierId  BigInt? // opcional: empresa/persona que provee la mercancía
+  sellerId    String // ← NUEVO: usuario dueño del producto
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   category   Category         @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   supplier   Supplier?        @relation(fields: [supplierId], references: [id], onDelete: SetNull)
+  seller     User             @relation("SellerProducts", fields: [sellerId], references: [id], onDelete: Cascade) // ← NUEVO
   variants   ProductVariant[]
   reviews    Review[]
   cartItems  CartItem[]
@@ -177,10 +180,10 @@ model ProductVariant {
 
 model Review {
   id         BigInt  @id @default(autoincrement())
-  userId     String // ← String ahora (era BigInt)
+  userId     String
   productId  BigInt
   rating     Int
-  comment    String?
+  comment    String? @db.Text
   isVerified Boolean @default(false)
 
   createdAt DateTime @default(now())
@@ -198,7 +201,7 @@ model Review {
 
 model Cart {
   id     BigInt  @id @default(autoincrement())
-  userId String // ← String ahora (era BigInt)
+  userId String
   total  Decimal @default(0) @db.Decimal(10, 2)
 
   createdAt DateTime @default(now())
@@ -232,12 +235,12 @@ model CartItem {
 model Order {
   id                String      @id @default(uuid())
   orderNumber       String      @unique
-  userId            String // ← String ahora (era BigInt)
+  userId            String
   status            OrderStatus @default(PENDING)
   total             Decimal     @db.Decimal(10, 2)
-  shippingAddress   String
+  shippingAddress   String      @db.Text
   paymentMethod     String?
-  paymentReceiptUrl String?
+  paymentReceiptUrl String?     @db.Text
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
