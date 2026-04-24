@@ -151,8 +151,8 @@ function HeroSection() {
       </div>
 
       {/* Contenido */}
-      <div className="relative h-full flex items-center">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative min-h-[70vh] md:min-h-screen flex items-center">
+        <div className="container px-4 sm:px-6 lg:px-8">
           <div className="max-w-2xl text-white">
             <div className="inline-block px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-sm mb-4">
               🔥 Hasta 40% OFF
