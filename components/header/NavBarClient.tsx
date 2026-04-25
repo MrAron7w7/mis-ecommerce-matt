@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Search, ShoppingCart, Menu, X } from 'lucide-react';
 import UserMenu from './userMenu';
 import SearchModal from './SearchModal';
@@ -21,18 +21,13 @@ type SessionUser = {
 
 type NavBarClientProps = {
   session: SessionUser | null;
-  products: PublicProduct[]; // Recibimos los productos desde el server
+  products: PublicProduct[];
 };
 
 export default function NavBarClient({ session, products }: NavBarClientProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const pathname = usePathname();
-
-  // Cerrar search modal al cambiar de ruta
-  useEffect(() => {
-    setIsSearchOpen(false);
-  }, [pathname]);
 
   return (
     <>
@@ -51,25 +46,15 @@ export default function NavBarClient({ session, products }: NavBarClientProps) {
             {/* Desktop Navigation */}
             <div className="hidden lg:flex items-center space-x-8">
               <NavLink href="/productos" pathname={pathname}>
-                Shop
+                Productos
               </NavLink>
-              <NavLink href="/new" pathname={pathname}>
-                New Arrivals
-              </NavLink>
-              <NavLink href="/sales" pathname={pathname}>
-                Sales
-              </NavLink>
-              <NavLink href="/journal" pathname={pathname}>
-                Journal
-              </NavLink>
-              <NavLink href="/stores" pathname={pathname}>
-                Stores
+              <NavLink href="/tiendas" pathname={pathname}>
+                Tiendas
               </NavLink>
             </div>
 
             {/* Right Icons */}
             <div className="flex items-center space-x-4 lg:space-x-6">
-              {/* Botón de búsqueda - Abre modal */}
               <button
                 onClick={() => setIsSearchOpen(true)}
                 className="hidden sm:block hover:opacity-60 transition"
@@ -87,7 +72,6 @@ export default function NavBarClient({ session, products }: NavBarClientProps) {
 
               <UserMenu session={session} />
 
-              {/* Mobile Menu Button */}
               <button
                 onClick={() => setIsMobileMenuOpen(true)}
                 className="lg:hidden p-2 hover:bg-gray-100 rounded-lg transition"
@@ -100,12 +84,10 @@ export default function NavBarClient({ session, products }: NavBarClientProps) {
         </div>
       </nav>
 
-      {/* Mobile Menu Drawer */}
       {isMobileMenuOpen && (
         <MobileDrawer onClose={() => setIsMobileMenuOpen(false)} pathname={pathname} />
       )}
 
-      {/* Search Modal */}
       <SearchModal
         isOpen={isSearchOpen}
         onClose={() => setIsSearchOpen(false)}
@@ -115,7 +97,6 @@ export default function NavBarClient({ session, products }: NavBarClientProps) {
   );
 }
 
-// Helper component for navigation links
 type NavLinkProps = {
   href: string;
   pathname: string;
@@ -136,7 +117,6 @@ function NavLink({ href, pathname, children }: NavLinkProps) {
   );
 }
 
-// Mobile drawer component
 type MobileDrawerProps = {
   onClose: () => void;
   pathname: string;

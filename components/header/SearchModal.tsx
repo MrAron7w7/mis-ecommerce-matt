@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter, usePathname } from 'next/navigation';
 import { X, Search, ShoppingBag, ArrowRight } from 'lucide-react';
 import { PublicProduct } from '@/actions/user/product.user.action';
 
@@ -12,21 +13,74 @@ type SearchModalProps = {
   products: PublicProduct[];
 };
 
+// ✅ Helper puro para leer localStorage fuera del componente
+function loadRecentSearches(): string[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const saved = localStorage.getItem('recentSearches');
+    return saved ? JSON.parse(saved) : [];
+  } catch {
+    return [];
+  }
+}
+
 export default function SearchModal({ isOpen, onClose, products }: SearchModalProps) {
   const [searchTerm, setSearchTerm] = useState('');
-  const [results, setResults] = useState<PublicProduct[]>([]);
-  const [recentSearches, setRecentSearches] = useState<string[]>([]);
+
+  // ✅ Lazy initializer: se ejecuta solo una vez, sin useEffect
+  const [recentSearches, setRecentSearches] = useState<string[]>(loadRecentSearches);
+
   const inputRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
+  const pathname = usePathname();
 
-  // Cargar búsquedas recientes del localStorage
+  // ✅ Reemplaza el useEffect de filtrado con useMemo (derivar estado, no sincronizarlo)
+  const results = useMemo<PublicProduct[]>(() => {
+    if (searchTerm.trim().length < 2) return [];
+    return products
+      .filter(
+        (product) =>
+          product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          product.category.toLowerCase().includes(searchTerm.toLowerCase()),
+      )
+      .slice(0, 8);
+  }, [searchTerm, products]);
+
+  // ✅ Enfocar input cuando se abre (este useEffect es correcto: sincroniza con DOM externo)
   useEffect(() => {
-    const saved = localStorage.getItem('recentSearches');
-    if (saved) {
-      setRecentSearches(JSON.parse(saved));
+    if (isOpen && inputRef.current) {
+      const id = setTimeout(() => inputRef.current?.focus(), 100);
+      return () => clearTimeout(id);
     }
-  }, []);
+  }, [isOpen]);
 
-  // Guardar búsquedas recientes
+  // ✅ Cerrar con ESC (suscripción a evento externo — uso correcto de useEffect)
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', handleEsc);
+    return () => document.removeEventListener('keydown', handleEsc);
+  }, [isOpen, onClose]);
+
+  // ✅ Bloquear scroll (sistema externo — uso correcto de useEffect)
+  useEffect(() => {
+    document.body.style.overflow = isOpen ? 'hidden' : 'auto';
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, [isOpen]);
+
+  // ✅ Cerrar modal al cambiar de ruta (reemplaza el useEffect en NavBarClient)
+  useEffect(() => {
+    if (isOpen) onClose();
+    // Solo queremos reaccionar al cambio de pathname, no a onClose
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
+
+  if (!isOpen) return null;
+
   const saveRecentSearch = (term: string) => {
     if (!term.trim()) return;
     const updated = [term, ...recentSearches.filter((s) => s !== term)].slice(0, 5);
@@ -34,57 +88,12 @@ export default function SearchModal({ isOpen, onClose, products }: SearchModalPr
     localStorage.setItem('recentSearches', JSON.stringify(updated));
   };
 
-  // Filtrar productos en tiempo real
-  useEffect(() => {
-    if (searchTerm.trim().length >= 2) {
-      const filtered = products.filter(
-        (product) =>
-          product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          product.category.toLowerCase().includes(searchTerm.toLowerCase()),
-      );
-      setResults(filtered.slice(0, 8));
-    } else {
-      setResults([]);
-    }
-  }, [searchTerm, products]);
-
-  // Enfocar input cuando se abre el modal
-  useEffect(() => {
-    if (isOpen && inputRef.current) {
-      setTimeout(() => inputRef.current?.focus(), 100);
-    }
-  }, [isOpen]);
-
-  // Cerrar con ESC
-  useEffect(() => {
-    const handleEsc = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-    if (isOpen) {
-      document.addEventListener('keydown', handleEsc);
-    }
-    return () => document.removeEventListener('keydown', handleEsc);
-  }, [isOpen, onClose]);
-
-  // Bloquear scroll
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'auto';
-    }
-    return () => {
-      document.body.style.overflow = 'auto';
-    };
-  }, [isOpen]);
-
-  if (!isOpen) return null;
-
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchTerm.trim()) {
       saveRecentSearch(searchTerm.trim());
-      window.location.href = `/productos?search=${encodeURIComponent(searchTerm.trim())}`;
+      // ✅ useRouter en lugar de window.location.href
+      router.push(`/productos?search=${encodeURIComponent(searchTerm.trim())}`);
       onClose();
     }
   };
@@ -97,7 +106,8 @@ export default function SearchModal({ isOpen, onClose, products }: SearchModalPr
   const handleRecentClick = (term: string) => {
     setSearchTerm(term);
     saveRecentSearch(term);
-    window.location.href = `/productos?search=${encodeURIComponent(term)}`;
+    // ✅ useRouter en lugar de window.location.href
+    router.push(`/productos?search=${encodeURIComponent(term)}`);
     onClose();
   };
 
@@ -204,7 +214,7 @@ export default function SearchModal({ isOpen, onClose, products }: SearchModalPr
                   <div className="text-center py-8">
                     <Search size={40} className="mx-auto text-gray-300 mb-3" />
                     <p className="text-gray-500 text-sm">
-                      No se encontraron productos para <strong>"{searchTerm}"</strong>
+                      No se encontraron productos para <strong>{searchTerm}</strong>
                     </p>
                     <p className="text-xs text-gray-400 mt-1">
                       Prueba con otras palabras o revisa nuestra tienda

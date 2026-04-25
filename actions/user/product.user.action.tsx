@@ -102,6 +102,7 @@ export async function getPublicCategories() {
       id: true,
       name: true,
       slug: true,
+      imageUrl: true,
       _count: {
         select: {
           products: {
@@ -117,6 +118,7 @@ export async function getPublicCategories() {
     id: Number(cat.id),
     name: cat.name,
     slug: cat.slug,
+    imageUrl: cat.imageUrl,
     productCount: cat._count.products,
   }));
 }

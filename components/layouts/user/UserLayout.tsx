@@ -1,15 +1,57 @@
 import Navbar from '@/components/header/Navbar';
-import React from 'react';
-import Footer from './Footer';
+import Footer from '@/components/layouts/user/Footer';
+import { Metadata } from 'next';
 
-function UserLayout({ children }: { children: React.ReactNode }) {
+import HeroSection from '@/components/user/inicio/HeroSection';
+import BenefitsBar from '@/components/user/inicio/BenefitsBar';
+import CategoriesSection from '@/components/user/inicio/CategoriesSection';
+import FeaturedProducts from '@/components/user/inicio/FeaturedProducts';
+import NewsletterSection from '@/components/user/inicio/NewsletterSection';
+import TestimonialsSection from '@/components/user/inicio/TestimonialsSection';
+import { PublicProduct } from '@/actions/user/product.user.action';
+import { CategoryModel } from '@/lib/types/types';
+
+export const metadata: Metadata = {
+  title: 'Inicio | Mat - Moda y Tecnología',
+  description:
+    'Descubre productos exclusivos en moda, tecnología y hogar. Envíos gratis en compras superiores a $50.',
+  keywords: 'tienda online, moda, tecnología, hogar, ofertas',
+};
+
+export default function UserLayoutClient({
+  products,
+  categories,
+}: {
+  products: PublicProduct[];
+  categories: CategoryModel[];
+}) {
   return (
-    <>
+    <main className="bg-white">
       <Navbar />
-      <main className="min-h-screen">{children}</main>
+
+      {/* Hero Section - Mejorado */}
+      <HeroSection />
+
+      {/* Benefits Bar */}
+      <BenefitsBar />
+
+      {/* Categories Grid */}
+      <CategoriesSection categories={categories} />
+
+      {/* Featured Products */}
+      <FeaturedProducts products={products} />
+
+      {/* Promotional Banners */}
+      {/* <PromotionalBanners /> */}
+
+      {/* Newsletter Section */}
+      <NewsletterSection />
+
+      {/* Testimonials */}
+      <TestimonialsSection />
+
+      {/* Footer */}
       <Footer />
-    </>
+    </main>
   );
 }
-
-export default UserLayout;

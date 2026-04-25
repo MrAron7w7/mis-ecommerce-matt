@@ -148,7 +148,7 @@ export default function Footer() {
               <span className="text-xs text-gray-500">Visa • Mastercard • PayPal</span>
             </div>
             <p className="text-xs text-gray-500 text-center">
-              © {currentYear} Tu Tienda. Todos los derechos reservados.
+              © {currentYear} Matt Innova Solution. Todos los derechos reservados.
             </p>
           </div>
         </div>
