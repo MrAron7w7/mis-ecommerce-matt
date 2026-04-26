@@ -14,10 +14,10 @@ import {
   Shield,
   RefreshCw,
   Clock,
-  Star,
-  ChevronLeft,
+  ShoppingCart,
 } from 'lucide-react';
 import { PublicProduct } from '@/actions/user/product.user.action';
+import { useCartStore } from '@/store/cartStore';
 
 type ProductDetailClientProps = {
   product: PublicProduct;
@@ -32,20 +32,18 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
   const [isLiked, setIsLiked] = useState(false);
   const [activeTab, setActiveTab] = useState<'description' | 'shipping' | 'returns'>('description');
 
-  // Separar variantes
+  // ✅ Store del carrito
+  const { addItem, openCart } = useCartStore();
+
   const colors = useMemo(() => product.colors || [], [product.colors]);
   const sizes = useMemo(() => product.sizes || [], [product.sizes]);
-
-  // Otras variantes
   const otherVariants = useMemo(
     () => product.variants?.filter((v) => v.type !== 'color' && v.type !== 'size') || [],
     [product.variants],
   );
 
-  // Imagen principal
   const mainImage = product.imageUrl;
 
-  // Resetear estado cuando cambia el producto
   useEffect(() => {
     setSelectedColor(colors.length > 0 ? colors[0] : null);
     setSelectedSize(null);
@@ -60,6 +58,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
     }
   };
 
+  // ✅ Lógica real de agregar al carrito
   const handleAddToCart = async () => {
     if (sizes.length > 0 && !selectedSize) {
       alert('Por favor selecciona un talle');
@@ -68,20 +67,24 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
 
     setIsAddingToCart(true);
 
-    // Aquí va tu lógica de carrito
-    console.log('Agregando al carrito:', {
-      productId: product.id,
-      slug: product.slug,
-      name: product.name,
-      price: product.price,
-      quantity,
-      color: selectedColor,
-      size: selectedSize,
-    });
+    // Agregar al store tantas veces como la cantidad seleccionada
+    for (let i = 0; i < quantity; i++) {
+      addItem({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        image: product.imageUrl || '',
+        category: product.category,
+      });
+    }
 
     await new Promise((resolve) => setTimeout(resolve, 500));
     setIsAddingToCart(false);
     setAddedToCart(true);
+
+    // ✅ Abrir el carrito automáticamente al agregar
+    openCart();
+
     setTimeout(() => setAddedToCart(false), 3000);
   };
 
@@ -104,7 +107,6 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
 
   const handleWishlist = () => {
     setIsLiked(!isLiked);
-    // Aquí va tu lógica de favoritos
     console.log('Wishlist:', product.id, !isLiked);
   };
 
@@ -113,10 +115,9 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-12">
       <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
-        {/* Galería de imágenes - Lado izquierdo */}
+        {/* Galería */}
         <div className="lg:w-1/2">
           <div className="lg:sticky lg:top-24">
-            {/* Imagen principal */}
             <div className="relative aspect-[3/4] w-full rounded-2xl overflow-hidden bg-gray-100">
               {mainImage ? (
                 <Image
@@ -152,7 +153,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
           </div>
         </div>
 
-        {/* Información del producto - Lado derecho */}
+        {/* Info del producto */}
         <div className="lg:w-1/2">
           {/* Categoría y título */}
           <div className="mb-4">
@@ -169,12 +170,10 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
 
           {/* Precio */}
           <div className="mb-6">
-            <div className="flex items-end gap-3">
-              <span className="text-3xl font-bold text-gray-900">${product.price}</span>
-            </div>
+            <span className="text-3xl font-bold text-gray-900">${product.price}</span>
           </div>
 
-          {/* Descripción */}
+          {/* Descripción corta */}
           {product.description && (
             <p className="text-gray-600 text-sm leading-relaxed mb-6 pb-6 border-b border-gray-100">
               {product.description}
@@ -191,18 +190,14 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                   {selectedColor && <span className="text-xs text-gray-500">{selectedColor}</span>}
                 </div>
                 <div className="flex gap-3 flex-wrap">
-                  {colors.map((color) => (
+                  {colors.map((color, index) => (
                     <button
                       key={`color-${color}-${index}`}
                       onClick={() => setSelectedColor(color)}
                       className={`
                         relative w-10 h-10 sm:w-12 sm:h-12 rounded-full transition-all duration-200
                         ring-2 ring-offset-2 hover:scale-110
-                        ${
-                          selectedColor === color
-                            ? 'ring-gray-900 ring-offset-2'
-                            : 'ring-gray-200 hover:ring-gray-400'
-                        }
+                        ${selectedColor === color ? 'ring-gray-900' : 'ring-gray-200 hover:ring-gray-400'}
                       `}
                       style={{ backgroundColor: color }}
                       aria-label={`Color ${color}`}
@@ -229,7 +224,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                   </button>
                 </div>
                 <div className="flex gap-2 flex-wrap">
-                  {sizes.map((size) => (
+                  {sizes.map((size, index) => (
                     <button
                       key={`size-${size}-${index}`}
                       onClick={() => setSelectedSize(size)}
@@ -254,7 +249,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
               <div className="grid grid-cols-2 gap-3 pt-2">
                 {otherVariants.map((variant, index) => (
                   <div
-                    key={`${variant.type}-${variant.value}-${index}`} // ✅ Key único
+                    key={`${variant.type}-${variant.value}-${index}`}
                     className="bg-gray-50 rounded-xl p-3"
                   >
                     <h3 className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
@@ -267,7 +262,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
             )}
           </div>
 
-          {/* Cantidad y stock */}
+          {/* ✅ Cantidad con eliminación automática si llega a 0 */}
           <div className="mb-8">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-sm font-medium text-gray-900">Cantidad</h3>
@@ -294,7 +289,6 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                 </button>
               </div>
 
-              {/* Acciones rápidas */}
               <button
                 onClick={handleShare}
                 className="p-2 sm:p-3 border border-gray-300 rounded-full hover:border-gray-900 hover:bg-gray-50 transition"
@@ -316,90 +310,81 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
             </div>
           </div>
 
-          {/* Botones de acción */}
+          {/* ✅ Botón agregar al carrito con animación */}
           <div className="space-y-3 mb-8">
             <button
               onClick={handleAddToCart}
               disabled={isOutOfStock || isAddingToCart}
               className={`
-                w-full py-3.5 sm:py-4 rounded-full transition-all flex items-center justify-center gap-2
+                w-full py-3.5 sm:py-4 rounded-full transition-all duration-300
+                flex items-center justify-center gap-2
                 font-medium text-sm sm:text-base
                 ${
-                  !isOutOfStock
-                    ? 'bg-gray-900 text-white hover:bg-gray-800 hover:scale-[1.02] active:scale-[0.98]'
-                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  isOutOfStock
+                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    : addedToCart
+                      ? 'bg-green-600 hover:bg-green-600 text-white scale-[1.02]'
+                      : 'bg-gray-900 text-white hover:bg-gray-800 hover:scale-[1.02] active:scale-[0.98]'
                 }
-                ${addedToCart ? 'bg-green-600 hover:bg-green-600' : ''}
               `}
             >
               {isAddingToCart ? (
                 <>
-                  <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                   Agregando...
                 </>
               ) : addedToCart ? (
                 <>
-                  <Check size={18} />
+                  <Check size={18} className="animate-bounce" />
                   ¡Agregado al carrito!
                 </>
               ) : (
                 <>
-                  <ShoppingBag size={18} />
+                  <ShoppingCart size={18} />
                   {isOutOfStock ? 'Producto agotado' : 'Agregar al carrito'}
                 </>
               )}
             </button>
 
             {!isOutOfStock && (
-              <Link
-                href="/cart"
-                className="block w-full py-3.5 sm:py-4 text-center border border-gray-300 rounded-full hover:border-gray-900 hover:bg-gray-50 transition font-medium text-sm sm:text-base"
+              <button
+                onClick={() => {
+                  handleAddToCart();
+                }}
+                className="w-full py-3.5 sm:py-4 text-center border border-gray-300 rounded-full hover:border-gray-900 hover:bg-gray-50 transition font-medium text-sm sm:text-base"
               >
                 Comprar ahora
-              </Link>
+              </button>
             )}
           </div>
 
           {/* Tabs de información */}
           <div className="border-t border-gray-100 pt-6">
             <div className="flex gap-4 sm:gap-6 border-b border-gray-100 overflow-x-auto">
-              <button
-                onClick={() => setActiveTab('description')}
-                className={`pb-3 text-xs sm:text-sm font-medium transition whitespace-nowrap ${
-                  activeTab === 'description'
-                    ? 'text-gray-900 border-b-2 border-gray-900'
-                    : 'text-gray-500 hover:text-gray-900'
-                }`}
-              >
-                Descripción
-              </button>
-              <button
-                onClick={() => setActiveTab('shipping')}
-                className={`pb-3 text-xs sm:text-sm font-medium transition whitespace-nowrap ${
-                  activeTab === 'shipping'
-                    ? 'text-gray-900 border-b-2 border-gray-900'
-                    : 'text-gray-500 hover:text-gray-900'
-                }`}
-              >
-                Envíos
-              </button>
-              <button
-                onClick={() => setActiveTab('returns')}
-                className={`pb-3 text-xs sm:text-sm font-medium transition whitespace-nowrap ${
-                  activeTab === 'returns'
-                    ? 'text-gray-900 border-b-2 border-gray-900'
-                    : 'text-gray-500 hover:text-gray-900'
-                }`}
-              >
-                Devoluciones
-              </button>
+              {(['description', 'shipping', 'returns'] as const).map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`pb-3 text-xs sm:text-sm font-medium transition whitespace-nowrap ${
+                    activeTab === tab
+                      ? 'text-gray-900 border-b-2 border-gray-900'
+                      : 'text-gray-500 hover:text-gray-900'
+                  }`}
+                >
+                  {tab === 'description'
+                    ? 'Descripción'
+                    : tab === 'shipping'
+                      ? 'Envíos'
+                      : 'Devoluciones'}
+                </button>
+              ))}
             </div>
 
             <div className="pt-6">
               {activeTab === 'description' && (
                 <div className="prose prose-sm max-w-none text-gray-600">
                   <p className="text-sm leading-relaxed">
-                    {product.description || 'No hay descripción disponible para este producto.'}
+                    {product.description || 'No hay descripción disponible.'}
                   </p>
                   {product.variants && product.variants.length > 0 && (
                     <div className="mt-4">

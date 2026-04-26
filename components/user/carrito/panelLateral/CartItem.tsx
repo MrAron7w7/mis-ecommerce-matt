@@ -21,7 +21,7 @@ export function CartItem({ item }: CartItemProps) {
       <div className="flex-1 min-w-0">
         <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{item.name}</p>
         <p className="text-xs text-gray-400 mt-0.5">{item.category}</p>
-        <p className="text-sm font-semibold mt-1">${item.price.toFixed(2)}</p>
+        <p className="text-sm dark:text-green-500 font-semibold mt-1">${item.price.toFixed(2)}</p>
       </div>
 
       <div className="flex flex-col items-end gap-2">
@@ -29,17 +29,17 @@ export function CartItem({ item }: CartItemProps) {
         <div className="flex items-center border border-gray-200 dark:border-gray-700 rounded-md">
           <button
             onClick={() => updateQty(item.id, item.quantity - 1)}
-            className="px-2 py-1 text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-l-md transition-colors"
+            className="px-2 py-1 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-l-md transition-colors"
             aria-label="Reducir cantidad"
           >
             −
           </button>
-          <span className="px-3 py-1 text-sm border-x border-gray-200 dark:border-gray-700 min-w-[32px] text-center">
+          <span className="px-3 py-1 text-sm border-x dark:text-white dark:border-gray-700 min-w-[32px] text-center">
             {item.quantity}
           </span>
           <button
             onClick={() => updateQty(item.id, item.quantity + 1)}
-            className="px-2 py-1 text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-r-md transition-colors"
+            className="px-2 py-1 text-gray-500 hover:bg-gray-50 dark:text-white rounded-r-md transition-colors"
             aria-label="Aumentar cantidad"
           >
             +
@@ -47,13 +47,15 @@ export function CartItem({ item }: CartItemProps) {
         </div>
 
         {/* Eliminar */}
-        <button
-          onClick={() => removeItem(item.id)}
-          className="text-xs text-red-400 hover:text-red-600 transition-colors"
-          aria-label={`Eliminar ${item.name}`}
-        >
-          Eliminar
-        </button>
+        <div className="flex justify-center w-full">
+          <button
+            onClick={() => removeItem(item.id)}
+            className="w-full text-xs text-red-400 hover:text-red-600 transition-colors text-center"
+            aria-label={`Eliminar ${item.name}`}
+          >
+            Eliminar
+          </button>
+        </div>
       </div>
     </li>
   );

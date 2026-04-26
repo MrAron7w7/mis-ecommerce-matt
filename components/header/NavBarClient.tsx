@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Search, ShoppingCart, Menu, X } from 'lucide-react';
 import UserMenu from './userMenu';
 import SearchModal from './SearchModal';
@@ -28,25 +28,68 @@ type NavBarClientProps = {
 export default function NavBarClient({ session, products }: NavBarClientProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const [itemCount, setItemCount] = useState(0);
   const pathname = usePathname();
-
   const { toggleCart, totalItems } = useCartStore();
+
+  useEffect(() => {
+    setMounted(true);
+    setItemCount(totalItems());
+  }, [totalItems]);
+
+  // Durante SSR, mostrar placeholder sin datos dinámicos
+  if (!mounted) {
+    return (
+      <div className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-sm border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16 lg:h-20">
+            <Link href="/" className="flex-shrink-0">
+              <img
+                src="/img/inicio/logo.png"
+                alt="Logo"
+                className="w-[100px] h-[50px] object-contain"
+              />
+            </Link>
+
+            <div className="hidden lg:flex items-center space-x-8">
+              <div className="text-sm font-medium text-gray-600">Productos</div>
+              <div className="text-sm font-medium text-gray-600">Tiendas</div>
+            </div>
+
+            <div className="flex items-center space-x-4 lg:space-x-6">
+              <div className="hidden sm:block">
+                <Search size={20} className="text-gray-600" />
+              </div>
+
+              <div className="relative">
+                <ShoppingCart size={20} className="text-gray-600" />
+              </div>
+
+              <div className="w-8 h-8 rounded-full bg-gray-200 animate-pulse" />
+              <div className="lg:hidden p-2">
+                <Menu size={22} className="text-gray-600" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
       <nav className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 lg:h-20">
-            {/* Logo */}
             <Link href="/" className="flex-shrink-0">
               <img
-                src="img/inicio/logo.png"
+                src="/img/inicio/logo.png"
                 alt="Logo"
                 className="w-[100px] h-[50px] object-contain"
               />
             </Link>
 
-            {/* Desktop Navigation */}
             <div className="hidden lg:flex items-center space-x-8">
               <NavLink href="/productos" pathname={pathname}>
                 Productos
@@ -56,7 +99,6 @@ export default function NavBarClient({ session, products }: NavBarClientProps) {
               </NavLink>
             </div>
 
-            {/* Right Icons */}
             <div className="flex items-center space-x-4 lg:space-x-6">
               <button
                 onClick={() => setIsSearchOpen(true)}
@@ -72,9 +114,9 @@ export default function NavBarClient({ session, products }: NavBarClientProps) {
                 aria-label="Abrir carrito"
               >
                 <ShoppingCart size={20} />
-                {totalItems() > 0 && (
+                {itemCount > 0 && (
                   <span className="absolute -top-2 -right-2 text-xs bg-black text-white rounded-full px-1.5 min-w-[18px] text-center">
-                    {totalItems()} {/* dinámico desde el store */}
+                    {itemCount > 99 ? '99+' : itemCount}
                   </span>
                 )}
               </button>
@@ -106,13 +148,16 @@ export default function NavBarClient({ session, products }: NavBarClientProps) {
   );
 }
 
-type NavLinkProps = {
+// NavLink component
+function NavLink({
+  href,
+  pathname,
+  children,
+}: {
   href: string;
   pathname: string;
   children: React.ReactNode;
-};
-
-function NavLink({ href, pathname, children }: NavLinkProps) {
+}) {
   const isActive = pathname === href;
   return (
     <Link
@@ -126,27 +171,19 @@ function NavLink({ href, pathname, children }: NavLinkProps) {
   );
 }
 
-type MobileDrawerProps = {
-  onClose: () => void;
-  pathname: string;
-};
-
-function MobileDrawer({ onClose, pathname }: MobileDrawerProps) {
+// MobileDrawer component
+function MobileDrawer({ onClose, pathname }: { onClose: () => void; pathname: string }) {
   const menuItems = [
-    { href: '/productos', label: 'Shop' },
-    { href: '/new', label: 'New Arrivals' },
-    { href: '/sales', label: 'Sales' },
-    { href: '/journal', label: 'Journal' },
-    { href: '/stores', label: 'Stores' },
-    { href: '/favorites', label: 'Favorites' },
+    { href: '/productos', label: 'Productos' },
+    { href: '/tiendas', label: 'Tiendas' },
   ];
 
   return (
     <>
       <div className="fixed inset-0 bg-black/50 z-50" onClick={onClose} />
-      <div className="fixed right-0 top-0 bottom-0 w-80 bg-white z-50 shadow-xl animate-slide-in">
+      <div className="fixed right-0 top-0 bottom-0 w-80 bg-white z-50 shadow-xl">
         <div className="flex justify-between items-center p-4 border-b">
-          <img src="img/inicio/logo.png" alt="Logo" className="w-[80px] h-[40px] object-contain" />
+          <img src="/img/inicio/logo.png" alt="Logo" className="w-[80px] h-[40px] object-contain" />
           <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg">
             <X size={22} />
           </button>
@@ -167,20 +204,6 @@ function MobileDrawer({ onClose, pathname }: MobileDrawerProps) {
           ))}
         </div>
       </div>
-
-      <style jsx>{`
-        @keyframes slide-in {
-          from {
-            transform: translateX(100%);
-          }
-          to {
-            transform: translateX(0);
-          }
-        }
-        .animate-slide-in {
-          animation: slide-in 0.3s ease-out;
-        }
-      `}</style>
     </>
   );
 }
