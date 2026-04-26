@@ -7,6 +7,7 @@ import { Search, ShoppingCart, Menu, X } from 'lucide-react';
 import UserMenu from './userMenu';
 import SearchModal from './SearchModal';
 import { PublicProduct } from '@/actions/user/product.user.action';
+import { useCartStore } from '@/store/cartStore';
 
 type SessionUser = {
   user?: {
@@ -28,6 +29,8 @@ export default function NavBarClient({ session, products }: NavBarClientProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const pathname = usePathname();
+
+  const { toggleCart, totalItems } = useCartStore();
 
   return (
     <>
@@ -63,12 +66,18 @@ export default function NavBarClient({ session, products }: NavBarClientProps) {
                 <Search size={20} />
               </button>
 
-              <Link href="/cart" className="relative hover:opacity-60 transition">
+              <button
+                onClick={toggleCart}
+                className="relative hover:opacity-60 transition"
+                aria-label="Abrir carrito"
+              >
                 <ShoppingCart size={20} />
-                <span className="absolute -top-2 -right-2 text-xs bg-black text-white rounded-full px-1.5 min-w-[18px] text-center">
-                  2
-                </span>
-              </Link>
+                {totalItems() > 0 && (
+                  <span className="absolute -top-2 -right-2 text-xs bg-black text-white rounded-full px-1.5 min-w-[18px] text-center">
+                    {totalItems()} {/* dinámico desde el store */}
+                  </span>
+                )}
+              </button>
 
               <UserMenu session={session} />
 
