@@ -8,6 +8,7 @@ import UserMenu from './userMenu';
 import SearchModal from './SearchModal';
 import { PublicProduct } from '@/actions/user/product.user.action';
 import { useCartStore } from '@/store/cartStore';
+import Image from 'next/image';
 
 type SessionUser = {
   user?: {
@@ -82,20 +83,21 @@ export default function NavBarClient({ session, products }: NavBarClientProps) {
       <nav className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 lg:h-20">
-            <Link href="/" className="flex-shrink-0">
-              <img
-                src="/img/inicio/logo.png"
-                alt="Logo"
-                className="w-[100px] h-[50px] object-contain"
-              />
+            {/* Logo */}
+            <Link href="/" className="shrink-0">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="img/inicio/logo.png" alt="Logo" className="w-25 h-12.5 object-contain" />
             </Link>
 
             <div className="hidden lg:flex items-center space-x-8">
+              <NavLink href="/" pathname={pathname}>
+                INICIO
+              </NavLink>
               <NavLink href="/productos" pathname={pathname}>
-                Productos
+                PRODUCTOS
               </NavLink>
               <NavLink href="/tiendas" pathname={pathname}>
-                Tiendas
+                TIENDAS
               </NavLink>
             </div>
 
@@ -114,9 +116,9 @@ export default function NavBarClient({ session, products }: NavBarClientProps) {
                 aria-label="Abrir carrito"
               >
                 <ShoppingCart size={20} />
-                {itemCount > 0 && (
-                  <span className="absolute -top-2 -right-2 text-xs bg-black text-white rounded-full px-1.5 min-w-[18px] text-center">
-                    {itemCount > 99 ? '99+' : itemCount}
+                {totalItems() > 0 && (
+                  <span className="absolute -top-2 -right-2 text-xs bg-black text-white rounded-full px-1.5 min-w-4.5 text-center">
+                    {totalItems()} {/* dinámico desde el store */}
                   </span>
                 )}
               </button>
@@ -162,7 +164,7 @@ function NavLink({
   return (
     <Link
       href={href}
-      className={`text-sm font-medium transition ${
+      className={`text-sm  transition font-light tracking-tight ${
         isActive ? 'text-black' : 'text-gray-600 hover:text-black'
       }`}
     >
@@ -183,7 +185,7 @@ function MobileDrawer({ onClose, pathname }: { onClose: () => void; pathname: st
       <div className="fixed inset-0 bg-black/50 z-50" onClick={onClose} />
       <div className="fixed right-0 top-0 bottom-0 w-80 bg-white z-50 shadow-xl">
         <div className="flex justify-between items-center p-4 border-b">
-          <img src="/img/inicio/logo.png" alt="Logo" className="w-[80px] h-[40px] object-contain" />
+          <Image src="img/inicio/logo.png" alt="Logo" className="w-20 h-10 object-contain" />
           <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg">
             <X size={22} />
           </button>

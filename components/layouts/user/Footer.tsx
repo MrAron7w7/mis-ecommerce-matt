@@ -46,18 +46,13 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/new" className="hover:text-white transition">
-                  Novedades
+                <Link href="/tiendas" className="hover:text-white transition">
+                  Tiendas
                 </Link>
               </li>
               <li>
-                <Link href="/sales" className="hover:text-white transition">
-                  Ofertas
-                </Link>
-              </li>
-              <li>
-                <Link href="/destacados" className="hover:text-white transition">
-                  Más vendidos
+                <Link href="/" className="hover:text-white transition">
+                  Inicio
                 </Link>
               </li>
             </ul>
@@ -145,7 +140,7 @@ export default function Footer() {
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
             <div className="flex gap-3">
               <CreditCard size={20} className="text-gray-500" />
-              <span className="text-xs text-gray-500">Visa • Mastercard • PayPal</span>
+              <span className="text-xs text-gray-500">Yape • Plin</span>
             </div>
             <p className="text-xs text-gray-500 text-center">
               © {currentYear} Matt Innova Solution. Todos los derechos reservados.
