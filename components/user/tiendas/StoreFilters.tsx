@@ -1,59 +1,51 @@
 'use client';
-
-import { useState } from 'react';
-import { Search } from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useCallback } from 'react';
+import { Search, SlidersHorizontal } from 'lucide-react';
 
 export default function StoreFilters() {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [sortBy, setSortBy] = useState<'name' | 'products' | 'newest'>('name');
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const search = searchParams?.get('search') || '';
+  const sort = searchParams?.get('sort') || 'name';
 
-  // Actualizar URL con los filtros
-  const updateFilters = (search: string, sort: string) => {
-    const params = new URLSearchParams();
-    if (search) params.set('search', search);
-    if (sort !== 'name') params.set('sort', sort);
-    window.history.pushState({}, '', `${window.location.pathname}?${params.toString()}`);
-  };
-
-  const handleSearch = (value: string) => {
-    setSearchTerm(value);
-    updateFilters(value, sortBy);
-  };
-
-  const handleSort = (value: 'name' | 'products' | 'newest') => {
-    setSortBy(value);
-    updateFilters(searchTerm, value);
-  };
+  const updateParams = useCallback(
+    (key: string, value: string) => {
+      const params = new URLSearchParams(searchParams?.toString());
+      if (value) {
+        params.set(key, value);
+      } else {
+        params.delete(key);
+      }
+      router.replace(`?${params.toString()}`, { scroll: false });
+    },
+    [router, searchParams],
+  );
 
   return (
-    <div className="sticky top-0 z-30 bg-white/95 backdrop-blur-sm border-b border-gray-100">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        {/* Search Bar */}
-        <div className="relative max-w-2xl mx-auto">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center bg-gray-50 rounded-2xl p-3">
+        <div className="relative flex-1">
+          <Search size={15} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
           <input
             type="text"
-            value={searchTerm}
-            onChange={(e) => handleSearch(e.target.value)}
-            placeholder="Buscar tiendas por nombre..."
-            className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-full focus:outline-none focus:border-gray-400 focus:bg-white transition-all text-sm"
+            placeholder="Buscar vendedor..."
+            defaultValue={search}
+            onChange={(e) => updateParams('search', e.target.value)}
+            className="w-full pl-10 pr-4 py-2.5 text-sm bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm"
           />
         </div>
-
-        {/* Sort Controls */}
-        <div className="flex justify-end mt-4">
-          <div className="flex items-center gap-3">
-            <span className="text-sm text-gray-500 hidden sm:inline">Ordenar por:</span>
-            <select
-              value={sortBy}
-              onChange={(e) => handleSort(e.target.value as 'name' | 'products' | 'newest')}
-              className="text-sm bg-transparent border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-gray-900 cursor-pointer"
-            >
-              <option value="name">Nombre</option>
-              <option value="products">Más productos</option>
-              <option value="newest">Más recientes</option>
-            </select>
-          </div>
+        <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-xl px-3 py-2.5 shadow-sm">
+          <SlidersHorizontal size={14} className="text-gray-400" />
+          <select
+            defaultValue={sort}
+            onChange={(e) => updateParams('sort', e.target.value)}
+            className="text-sm bg-transparent focus:outline-none cursor-pointer text-gray-700"
+          >
+            <option value="name">Nombre A-Z</option>
+            <option value="products">Más productos</option>
+            <option value="newest">Más recientes</option>
+          </select>
         </div>
       </div>
     </div>
