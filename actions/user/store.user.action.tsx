@@ -31,11 +31,7 @@ export async function getStores(): Promise<Store[]> {
   const sellers = await prisma.user.findMany({
     where: {
       role: 'SELLER',
-      products: {
-        some: {
-          isActive: true,
-        },
-      },
+      
     },
     select: {
       id: true,
