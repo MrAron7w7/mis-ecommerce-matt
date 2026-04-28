@@ -2,17 +2,25 @@
 
 import { useCartStore } from '@/store/cartStore';
 import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 export function CartActions() {
   const { items, clearCart, closeCart } = useCartStore();
   const router = useRouter();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleCheckout = () => {
     closeCart();
     router.push('/checkout');
   };
 
-  const isEmpty = items.length === 0;
+  // Durante la hidratación, usamos isEmpty = false para evitar mismatch
+  // Después de montar, calculamos el valor real
+  const isEmpty = !mounted ? false : items.length === 0;
 
   return (
     <div className="px-6 py-4 border-t border-gray-100 dark:border-gray-800 flex flex-col gap-3">
