@@ -6,6 +6,7 @@ import {
   Truck,
   Users,
   Settings,
+  BarChart3,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
@@ -18,15 +19,16 @@ export interface NavItem {
 
 export const primaryNavItems: NavItem[] = [
   { name: 'Dashboard', path: '/admin', icon: LayoutDashboard, badge: null },
-  { name: 'Productos', path: '/admin/productos', icon: Package, badge: '128' },
-  { name: 'Categorías', path: '/admin/categorias', icon: Tags, badge: null },
+  
 ];
 
 export const managementNavItems: NavItem[] = [
-  { name: 'Pedidos', path: '/admin/pedidos', icon: CreditCard, badge: '12' },
-  { name: 'Envíos', path: '/admin/envios', icon: Truck, badge: null },
-  { name: 'Clientes', path: '/admin/clientes', icon: Users, badge: null },
-  { name: 'Configuración', path: '/admin/configuracion', icon: Settings, badge: null },
+  { name: 'Usuarios', path: '/admin/usuarios', icon: Users, badge: null },
+  { name: 'Solicitudes de vendedores', path: '/admin/vendedores', icon:  Users, badge: null },
+  { name: 'Productos', path: '/admin/productos', icon: Package, badge: null },
+  { name: 'Categorías', path: '/admin/categorias', icon: Tags, badge: null },
+  { name: 'Pedidos', path: '/admin/pedidos', icon: BarChart3, badge: null },
+  { name: 'Reportes', path: '/admin/categorias', icon:  CreditCard, badge: null },
 ];
 
 export const allNavItems: NavItem[] = [...primaryNavItems, ...managementNavItems];

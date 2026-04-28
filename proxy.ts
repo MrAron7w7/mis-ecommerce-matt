@@ -22,7 +22,7 @@ export function proxy(request: NextRequest) {
   // 🔹 Si NO está logueado y quiere entrar a seller/admin
   if (!sessionToken && isProtectedRoute) {
     return NextResponse.redirect(
-      new URL("/iniciar-sesion", request.url)
+      new URL("/", request.url)
     );
   }
 

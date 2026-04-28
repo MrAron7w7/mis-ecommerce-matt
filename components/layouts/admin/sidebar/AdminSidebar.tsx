@@ -4,6 +4,7 @@ import { Store, Menu, LogOut } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { primaryNavItems, managementNavItems } from './nav-config';
 import { SidebarNavItem } from './SidebarNavItem';
+import { logoutAction } from '@/actions/auth/auth.action';
 
 interface AdminSidebarProps {
   isCollapsed: boolean;
@@ -23,9 +24,9 @@ export function AdminSidebar({ isCollapsed, onToggleCollapse }: AdminSidebarProp
       `}
     >
       {/* Logo */}
-      <div className={`flex-shrink-0 p-5 border-b border-gray-200 ${isCollapsed ? 'px-3' : ''}`}>
+      <div className={`shrink-0 p-5 border-b border-gray-200 ${isCollapsed ? 'px-3' : ''}`}>
         <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'gap-3'}`}>
-          <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
+          <div className="w-10 h-10 bg-linear-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg shrink-0">
             <Store className="w-5 h-5 text-white" />
           </div>
           {!isCollapsed && (
@@ -65,7 +66,7 @@ export function AdminSidebar({ isCollapsed, onToggleCollapse }: AdminSidebarProp
           )}
           {managementNavItems.map((item) => (
             <SidebarNavItem
-              key={item.path}
+              key={item.name}
               item={item}
               isActive={pathname === item.path}
               isCollapsed={isCollapsed}
@@ -75,8 +76,9 @@ export function AdminSidebar({ isCollapsed, onToggleCollapse }: AdminSidebarProp
       </nav>
 
       {/* Footer */}
-      <div className="flex-shrink-0 p-4 border-t border-gray-200 space-y-1">
+      <div className="shrink-0 p-4 border-t border-gray-200 space-y-1">
         <button
+          onClick={logoutAction}
           className={`
             flex items-center gap-3 px-3 py-2 w-full rounded-lg
             text-red-500 hover:bg-red-50 transition-colors
@@ -84,7 +86,7 @@ export function AdminSidebar({ isCollapsed, onToggleCollapse }: AdminSidebarProp
           `}
           title={isCollapsed ? 'Cerrar sesión' : undefined}
         >
-          <LogOut className="w-5 h-5 flex-shrink-0" />
+          <LogOut className="w-5 h-5 shrink-0" />
           {!isCollapsed && <span className="font-medium text-sm">Cerrar sesión</span>}
         </button>
 
@@ -97,7 +99,7 @@ export function AdminSidebar({ isCollapsed, onToggleCollapse }: AdminSidebarProp
           `}
           title={isCollapsed ? 'Expandir menú' : undefined}
         >
-          <Menu className="w-5 h-5 flex-shrink-0" />
+          <Menu className="w-5 h-5 shrink-0" />
           {!isCollapsed && <span className="font-medium text-sm">Colapsar menú</span>}
         </button>
       </div>
