@@ -1,7 +1,7 @@
 // components/footer/Footer.tsx
 import Link from 'next/link';
 import Image from 'next/image';
-import { Mail, Phone, MapPin, CreditCard, Truck, Shield, Headphones, User } from 'lucide-react';
+import { Mail, Phone, MapPin, CreditCard, Truck, Shield, Headphones } from 'lucide-react';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -108,7 +108,7 @@ export default function Footer() {
             <h4 className="text-white font-medium mb-4">Contacto</h4>
             <ul className="space-y-3 text-sm">
               <li className="flex items-start gap-3">
-                <MapPin size={16} className="mt-0.5 flex-shrink-0" />
+                <MapPin size={16} className="mt-0.5 shrink-0" />
                 <span className="text-gray-400">Av. Principal 123, Ciudad</span>
               </li>
               <li className="flex items-center gap-3">

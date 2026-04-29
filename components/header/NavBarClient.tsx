@@ -9,17 +9,7 @@ import SearchModal from './SearchModal';
 import { PublicProduct } from '@/actions/user/product.user.action';
 import { useCartStore } from '@/store/cartStore';
 import Image from 'next/image';
-
-type SessionUser = {
-  user?: {
-    id?: string;
-    name?: string;
-    lastName?: string | null;
-    email?: string;
-    role?: 'USER' | 'SELLER' | 'ADMIN';
-    image?: string;
-  };
-};
+import { SessionUser } from '@/lib/types/session-user';
 
 type NavBarClientProps = {
   session: SessionUser | null;
@@ -45,11 +35,13 @@ export default function NavBarClient({ session, products }: NavBarClientProps) {
       <div className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 lg:h-20">
-            <Link href="/" className="flex-shrink-0">
-              <img
+            <Link href="/" className="shrink-0">
+              <Image
+                width={100}
+                height={50}
                 src="/img/inicio/logo.png"
                 alt="Logo"
-                className="w-[100px] h-[50px] object-contain"
+                className="w-25 h-12.5 object-contain"
               />
             </Link>
 

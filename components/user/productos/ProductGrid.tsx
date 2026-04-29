@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { Filter, X, ArrowUpDown } from 'lucide-react';
 import ProductCard from './ProductCard';
-import { PublicProduct } from '@/actions/user/product.user.action';
+import { PublicProduct } from '@/lib/types/type.public';
 
 type Category = {
   id: string;
@@ -22,18 +22,15 @@ export default function ProductGrid({ initialProducts, categories }: ProductGrid
   const [activeCategory, setActiveCategory] = useState('all');
   const [sortBy, setSortBy] = useState('featured');
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
   const [selectedColors, setSelectedColors] = useState<ColorOption[]>([]);
   const [inStockOnly, setInStockOnly] = useState(false);
 
   const maxPrice = useMemo(
-    () => Math.max(...initialProducts.map((p) => p.price), 1000),
+    () => Math.max(...initialProducts.map((p) => p.price), 0),
     [initialProducts],
   );
 
-  useEffect(() => {
-    setPriceRange([0, maxPrice]);
-  }, [maxPrice]);
+  const [priceRange, setPriceRange] = useState<[number, number]>(() => [0, maxPrice]);
 
   const allColors = useMemo(() => {
     const colors = new Set<string>();
@@ -114,7 +111,7 @@ export default function ProductGrid({ initialProducts, categories }: ProductGrid
 
       <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
         {/* Sidebar Filters - Desktop */}
-        <aside className="hidden lg:block w-72 flex-shrink-0">
+        <aside className="hidden lg:block w-72 shrink-0">
           <FilterSidebar
             categories={categories}
             activeCategory={activeCategory}

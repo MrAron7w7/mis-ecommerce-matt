@@ -7,7 +7,7 @@ export type Category = {
 };
 
 export type FilterCategory = Category & {
-  id: string;
+  id: string | number;
   name: string;
   productCount: number;
 };

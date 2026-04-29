@@ -29,7 +29,7 @@ export function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
         {/* Header */}
         <div className="flex items-center justify-between p-5 border-b border-gray-200">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg">
+            <div className="w-10 h-10 bg-linear-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg">
               <Store className="w-5 h-5 text-white" />
             </div>
             <div>
@@ -62,7 +62,7 @@ export function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
                   ${isActive ? 'bg-emerald-50 text-emerald-700' : 'text-gray-700 hover:bg-gray-100'}
                 `}
               >
-                <Icon className="w-5 h-5 flex-shrink-0" />
+                <Icon className="w-5 h-5 shrink-0" />
                 <span className="flex-1 font-medium text-sm">{item.name}</span>
                 {item.badge && (
                   <span className="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full">

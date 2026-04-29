@@ -13,7 +13,6 @@ type SearchModalProps = {
   products: PublicProduct[];
 };
 
-// ✅ Helper puro para leer localStorage fuera del componente
 function loadRecentSearches(): string[] {
   if (typeof window === 'undefined') return [];
   try {
@@ -26,27 +25,30 @@ function loadRecentSearches(): string[] {
 
 export default function SearchModal({ isOpen, onClose, products }: SearchModalProps) {
   const [searchTerm, setSearchTerm] = useState('');
-
-  // ✅ Lazy initializer: se ejecuta solo una vez, sin useEffect
   const [recentSearches, setRecentSearches] = useState<string[]>(loadRecentSearches);
-
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const pathname = usePathname();
 
-  // ✅ Reemplaza el useEffect de filtrado con useMemo (derivar estado, no sincronizarlo)
+  // ✅ Validación principal: asegurar que products es un array antes de usarlo
   const results = useMemo<PublicProduct[]>(() => {
+    // Validación crítica
+    if (!products || !Array.isArray(products) || products.length === 0) {
+      return [];
+    }
+
     if (searchTerm.trim().length < 2) return [];
+
     return products
       .filter(
         (product) =>
-          product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          product.category.toLowerCase().includes(searchTerm.toLowerCase()),
+          product.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          product.category?.toLowerCase().includes(searchTerm.toLowerCase()),
       )
       .slice(0, 8);
   }, [searchTerm, products]);
 
-  // ✅ Enfocar input cuando se abre (este useEffect es correcto: sincroniza con DOM externo)
+  // Efectos existentes (no cambian)
   useEffect(() => {
     if (isOpen && inputRef.current) {
       const id = setTimeout(() => inputRef.current?.focus(), 100);
@@ -54,7 +56,6 @@ export default function SearchModal({ isOpen, onClose, products }: SearchModalPr
     }
   }, [isOpen]);
 
-  // ✅ Cerrar con ESC (suscripción a evento externo — uso correcto de useEffect)
   useEffect(() => {
     if (!isOpen) return;
     const handleEsc = (e: KeyboardEvent) => {
@@ -64,7 +65,6 @@ export default function SearchModal({ isOpen, onClose, products }: SearchModalPr
     return () => document.removeEventListener('keydown', handleEsc);
   }, [isOpen, onClose]);
 
-  // ✅ Bloquear scroll (sistema externo — uso correcto de useEffect)
   useEffect(() => {
     document.body.style.overflow = isOpen ? 'hidden' : 'auto';
     return () => {
@@ -72,15 +72,13 @@ export default function SearchModal({ isOpen, onClose, products }: SearchModalPr
     };
   }, [isOpen]);
 
-  // ✅ Cerrar modal al cambiar de ruta (reemplaza el useEffect en NavBarClient)
   useEffect(() => {
     if (isOpen) onClose();
-    // Solo queremos reaccionar al cambio de pathname, no a onClose
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
   if (!isOpen) return null;
 
+  // Resto de funciones igual...
   const saveRecentSearch = (term: string) => {
     if (!term.trim()) return;
     const updated = [term, ...recentSearches.filter((s) => s !== term)].slice(0, 5);
@@ -92,7 +90,6 @@ export default function SearchModal({ isOpen, onClose, products }: SearchModalPr
     e.preventDefault();
     if (searchTerm.trim()) {
       saveRecentSearch(searchTerm.trim());
-      // ✅ useRouter en lugar de window.location.href
       router.push(`/productos?search=${encodeURIComponent(searchTerm.trim())}`);
       onClose();
     }
@@ -106,7 +103,6 @@ export default function SearchModal({ isOpen, onClose, products }: SearchModalPr
   const handleRecentClick = (term: string) => {
     setSearchTerm(term);
     saveRecentSearch(term);
-    // ✅ useRouter en lugar de window.location.href
     router.push(`/productos?search=${encodeURIComponent(term)}`);
     onClose();
   };
@@ -117,15 +113,12 @@ export default function SearchModal({ isOpen, onClose, products }: SearchModalPr
   };
 
   return (
+    // JSX igual...
     <>
-      {/* Overlay */}
-      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[9999]" onClick={onClose} />
-
-      {/* Modal */}
-      <div className="fixed inset-x-0 top-0 z-[10000] animate-in slide-in-from-top-2 duration-200">
+      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-9999" onClick={onClose} />
+      <div className="fixed inset-x-0 top-0 z-10000 animate-in slide-in-from-top-2 duration-200">
         <div className="bg-white shadow-2xl">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-            {/* Header */}
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-lg font-light text-gray-900">Buscar productos</h2>
               <button
@@ -137,7 +130,6 @@ export default function SearchModal({ isOpen, onClose, products }: SearchModalPr
               </button>
             </div>
 
-            {/* Formulario de búsqueda */}
             <form onSubmit={handleSearch} className="relative">
               <input
                 ref={inputRef}
@@ -159,7 +151,6 @@ export default function SearchModal({ isOpen, onClose, products }: SearchModalPr
               </button>
             </form>
 
-            {/* Resultados de búsqueda */}
             {searchTerm.length >= 2 && (
               <div className="mt-6 max-h-96 overflow-y-auto">
                 {results.length > 0 ? (
@@ -184,7 +175,7 @@ export default function SearchModal({ isOpen, onClose, products }: SearchModalPr
                           onClick={() => handleResultClick(product)}
                           className="flex items-center gap-4 p-3 rounded-lg hover:bg-gray-50 transition group"
                         >
-                          <div className="relative w-12 h-12 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
+                          <div className="relative w-12 h-12 rounded-lg overflow-hidden bg-gray-100 shrink-0">
                             {product.imageUrl ? (
                               <Image
                                 src={product.imageUrl}
@@ -224,7 +215,6 @@ export default function SearchModal({ isOpen, onClose, products }: SearchModalPr
               </div>
             )}
 
-            {/* Búsquedas recientes */}
             {searchTerm.length === 0 && recentSearches.length > 0 && (
               <div className="mt-6">
                 <div className="flex justify-between items-center mb-3">
@@ -252,7 +242,6 @@ export default function SearchModal({ isOpen, onClose, products }: SearchModalPr
               </div>
             )}
 
-            {/* Categorías populares */}
             {searchTerm.length === 0 && (
               <div className="mt-6 pt-4 border-t border-gray-100">
                 <p className="text-xs text-gray-500 uppercase tracking-wider mb-3">

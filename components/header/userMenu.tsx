@@ -5,17 +5,8 @@ import { useState } from 'react';
 import { User, ChevronDown } from 'lucide-react';
 import UserDropdown from './UserDropdown';
 import { useModal } from './ModalProvider';
-
-type SessionUser = {
-  user?: {
-    id?: string;
-    name?: string;
-    lastName?: string | null;
-    email?: string;
-    role?: 'USER' | 'SELLER' | 'ADMIN';
-    image?: string;
-  };
-};
+import { SessionUser } from '@/lib/types/session-user';
+import { toUserRole } from '@/lib/types/auth-model';
 
 type UserMenuProps = {
   session: SessionUser | null;
@@ -72,6 +63,8 @@ export default function UserMenu({ session }: UserMenuProps) {
           user={{
             ...user,
             name: displayName || user.name || '',
+            role: toUserRole(user.role),
+            image: user.image || '',
           }}
           onClose={() => setIsDropdownOpen(false)}
           onLogout={handleLogoutClick}

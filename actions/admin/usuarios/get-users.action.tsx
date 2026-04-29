@@ -3,7 +3,8 @@
 
 import { requireRole } from '@/lib/helpers/session';
 import prisma from '@/lib/prisma';
-import { AdminUserView, Role } from '@/lib/types/type-models';
+import { AdminUserView } from '@/lib/types/type.admin';
+import { Role } from '@/lib/types/type.models';
 import { revalidatePath } from 'next/cache';
 
 export async function getUsers(): Promise<AdminUserView[]> {
@@ -16,14 +17,18 @@ export async function getUsers(): Promise<AdminUserView[]> {
         name: true,
         email: true,
         role: true,
+        lastName: true,
         isBlocked: true,
         createdAt: true,
         image: true,
+        phone: true,
+        documentType: true,
+        documentNumber: true,
         sellerProfile: {
           select: { storeName: true },
         },
         _count: {
-          select: { products: true },
+          select: { orders: true },
         },
       },
     });
@@ -35,10 +40,14 @@ export async function getUsers(): Promise<AdminUserView[]> {
       role: user.role as Role, // Prisma devuelve el enum como string
       isBlocked: user.isBlocked,
       createdAt: user.createdAt.toISOString(),
-      location: 'Perú',
+      //location: 'Perú',
       image: user.image,
-      totalOrders: user._count.products,
+      totalOrders: user._count.orders,
       sellerProfile: user.sellerProfile,
+      lastName: user.lastName,
+      documentType: user.documentType,
+      documentNumber: user.documentNumber,
+      phone: user.phone,
     }));
   } catch (error) {
     console.error(error);

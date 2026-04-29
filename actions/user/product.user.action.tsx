@@ -1,26 +1,7 @@
 'use server';
 
 import prisma from '@/lib/prisma';
-
-export type Variant = {
-  type: string;
-  value: string;
-};
-
-// Tipos públicos (NO expones campos internos como isActive, sellerId, etc)
-export type PublicProduct = {
-  id: number;
-  name: string;
-  slug: string;
-  description: string | null;
-  price: number;
-  imageUrl: string | null;
-  variants: Variant[];
-  sizes: string[];
-  category: string;
-  colors: string[]; // Esto viene de variants
-  stock: number;
-};
+import { PublicCategory, PublicProduct } from '@/lib/types/type.public';
 
 export async function getPublicProducts(): Promise<PublicProduct[]> {
   const products = await prisma.product.findMany({
@@ -95,7 +76,7 @@ export async function getPublicProductBySlug(slug: string): Promise<PublicProduc
 }
 
 // Obtener categorías activas para el filtro
-export async function getPublicCategories() {
+export async function getPublicCategories(): Promise<PublicCategory[]> {
   const categories = await prisma.category.findMany({
     where: { isActive: true },
     select: {

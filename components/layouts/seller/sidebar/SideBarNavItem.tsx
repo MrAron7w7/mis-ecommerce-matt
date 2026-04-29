@@ -25,9 +25,7 @@ export function SidebarNavItem({ item, isActive, isCollapsed }: NavItemProps) {
         <span className="absolute left-0 w-1 h-8 bg-emerald-600 rounded-r-full" />
       )}
 
-      <Icon
-        className={`w-5 h-5 flex-shrink-0 ${isActive ? 'text-emerald-600' : 'text-gray-500'}`}
-      />
+      <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-emerald-600' : 'text-gray-500'}`} />
 
       {!isCollapsed && (
         <>

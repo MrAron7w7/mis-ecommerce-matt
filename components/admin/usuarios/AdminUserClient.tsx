@@ -21,10 +21,11 @@ import {
   Mail,
   Calendar,
 } from 'lucide-react';
-import { AdminUserView, Role } from '@/lib/types/type-models';
 import { changeUserRole } from '@/actions/admin/usuarios/get-users.action';
 import { toggleUserBlock } from '@/actions/admin/usuarios/toggle-blocked.action';
 import { useToast } from '@/components/ui/custom-toast';
+import { AdminUserView } from '@/lib/types/type.admin';
+import { Role } from '@/app/generated/prisma/enums';
 
 type Props = {
   initialUsers: AdminUserView[];

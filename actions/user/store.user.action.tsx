@@ -13,7 +13,11 @@ export type Store = {
   totalSales?: number;
   rating?: number;
   since: string;
-  description?: string;
+
+  storeName: string | null;
+  storeLogo: string | null;
+  storeCover: string | null;
+  description: string | null;
   products: StoreProduct[];
 };
 
@@ -31,7 +35,6 @@ export async function getStores(): Promise<Store[]> {
   const sellers = await prisma.user.findMany({
     where: {
       role: 'SELLER',
-      
     },
     select: {
       id: true,
@@ -40,6 +43,20 @@ export async function getStores(): Promise<Store[]> {
       email: true,
       image: true,
       createdAt: true,
+      sellerProfile: {
+        select: {
+          address: true,
+          storeName: true,
+          description: true,
+          email: true,
+          phone: true,
+          website: true,
+          socialMedia: true,
+          businessHours: true,
+          logo: true,
+          coverImage: true,
+        },
+      },
       products: {
         where: {
           isActive: true,
@@ -77,6 +94,10 @@ export async function getStores(): Promise<Store[]> {
       imageUrl: product.imageUrl,
       stock: product.stock,
     })),
+    storeName: seller.sellerProfile?.storeName ?? null,
+    storeLogo: seller.sellerProfile?.logo ?? null,
+    storeCover: seller.sellerProfile?.coverImage ?? null,
+    description: seller.sellerProfile?.description ?? null,
   }));
 }
 
@@ -107,6 +128,20 @@ export async function getStoreBySellerId(sellerId: string): Promise<Store | null
           stock: true,
         },
       },
+      sellerProfile: {
+        select: {
+          storeName: true,
+          description: true,
+          logo: true,
+          coverImage: true,
+          email: true,
+          phone: true,
+          website: true,
+          socialMedia: true,
+          businessHours: true,
+          address: true,
+        },
+      },
     },
   });
 
@@ -132,6 +167,11 @@ export async function getStoreBySellerId(sellerId: string): Promise<Store | null
       imageUrl: product.imageUrl,
       stock: product.stock,
     })),
+
+    storeName: seller.sellerProfile?.storeName ?? null,
+    storeLogo: seller.sellerProfile?.logo ?? null,
+    storeCover: seller.sellerProfile?.coverImage ?? null,
+    description: seller.sellerProfile?.description ?? null,
   };
 }
 

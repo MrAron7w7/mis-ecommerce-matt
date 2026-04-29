@@ -20,7 +20,7 @@ export default function CategoriesSection({ categories }: { categories: Category
             <Link
               key={i}
               href={`/productos/${category.slug}`}
-              className="group relative overflow-hidden rounded-2xl aspect-[3/4]"
+              className="group relative overflow-hidden rounded-2xl aspect-3/4"
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
@@ -31,7 +31,7 @@ export default function CategoriesSection({ categories }: { categories: Category
              group-hover:scale-110"
               />
 
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+              <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/20 to-transparent" />
               <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
                 <h3 className="text-2xl font-bold mb-1">{category.name}</h3>
                 <p className="text-sm text-gray-200">{category.productCount} productos</p>

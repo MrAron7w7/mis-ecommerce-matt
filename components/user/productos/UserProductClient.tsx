@@ -1,7 +1,6 @@
 import Navbar from '@/components/header/Navbar';
 import Footer from '@/components/layouts/user/Footer';
 import ProductGrid from './ProductGrid';
-import { PublicProduct } from '@/actions/user/product.user.action';
 
 type Category = {
   id: number;
@@ -35,7 +34,7 @@ export default function UserProductClient({
       <main className="min-h-screen bg-white">
         {/* Hero Section - Matching home page style */}
         <div className="relative bg-gray-50 overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-white to-gray-50" />
+          <div className="absolute inset-0 bg-linear-to-br from-gray-50 via-white to-gray-50" />
           <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20">
             <div className="text-center max-w-3xl mx-auto">
               <div className="inline-flex items-center gap-2 px-3 py-1 bg-gray-900/5 rounded-full text-sm text-gray-600 mb-4">
@@ -70,3 +69,4 @@ export default function UserProductClient({
 
 // Importamos ProductSearchBar después de definirlo
 import ProductSearchBar from './ProductSearchBar';
+import { PublicProduct } from '@/lib/types/type.public';

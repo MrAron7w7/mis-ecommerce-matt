@@ -105,7 +105,7 @@ export default function UserDropdown({ user, onClose, onLogout }: UserDropdownPr
         className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-200"
       >
         {/* Header del usuario */}
-        <div className="p-4 bg-gradient-to-r from-gray-50 to-white border-b border-gray-100">
+        <div className="p-4 bg-linear-to-r from-gray-50 to-white border-b border-gray-100">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-full bg-gray-900 text-white flex items-center justify-center">
               <span className="text-lg font-medium">

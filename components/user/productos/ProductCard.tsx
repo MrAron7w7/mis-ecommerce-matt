@@ -4,7 +4,7 @@ import { Heart } from 'lucide-react';
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { PublicProduct } from '@/actions/user/product.user.action';
+import { PublicProduct } from '@/lib/types/type.public';
 
 type ProductCardProps = {
   product: PublicProduct;
@@ -23,7 +23,7 @@ export default function ProductCard({ product }: ProductCardProps) {
       onMouseLeave={() => setHovered(false)}
     >
       <Link href={`/productos/${product.slug}`} className="block">
-        <div className="relative overflow-hidden aspect-[3/4] w-full rounded-xl bg-gray-100">
+        <div className="relative overflow-hidden aspect-3/4 w-full rounded-xl bg-gray-100">
           {product.imageUrl ? (
             <Image
               src={product.imageUrl}

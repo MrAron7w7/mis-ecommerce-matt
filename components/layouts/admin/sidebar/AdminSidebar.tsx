@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { primaryNavItems, managementNavItems } from './nav-config';
 import { SidebarNavItem } from './SidebarNavItem';
 import { logoutAction } from '@/actions/auth/auth.action';
+import Link from 'next/link';
 
 interface AdminSidebarProps {
   isCollapsed: boolean;
@@ -24,19 +25,23 @@ export function AdminSidebar({ isCollapsed, onToggleCollapse }: AdminSidebarProp
       `}
     >
       {/* Logo */}
-      <div className={`shrink-0 p-5 border-b border-gray-200 ${isCollapsed ? 'px-3' : ''}`}>
-        <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'gap-3'}`}>
-          <div className="w-10 h-10 bg-linear-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg shrink-0">
-            <Store className="w-5 h-5 text-white" />
-          </div>
-          {!isCollapsed && (
-            <div className="overflow-hidden">
-              <span className="text-lg font-bold text-gray-900 block leading-tight">MiTienda</span>
-              <span className="text-xs text-emerald-600">● Online</span>
+      <Link href={'/'}>
+        <div className={`shrink-0 p-5 border-b border-gray-200 ${isCollapsed ? 'px-3' : ''}`}>
+          <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'gap-3'}`}>
+            <div className="w-10 h-10 bg-linear-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg shrink-0">
+              <Store className="w-5 h-5 text-white" />
             </div>
-          )}
+            {!isCollapsed && (
+              <div className="overflow-hidden">
+                <span className="text-lg font-bold text-gray-900 block leading-tight">
+                  Panel de administración
+                </span>
+                <span className="text-xs text-emerald-600">● Online</span>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
+      </Link>
 
       {/* Navegación */}
       <nav className="flex-1 overflow-y-auto p-4 space-y-6">

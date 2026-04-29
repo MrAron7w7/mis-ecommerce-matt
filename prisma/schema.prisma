@@ -142,8 +142,17 @@ model SellerProfile {
   id          String  @id @default(uuid())
   userId      String  @unique
   storeName   String
-  description String?
+  description String? @db.Text
   logo        String?
+  coverImage  String?
+
+  email   String?
+  phone   String?
+  address String?
+  website String?
+
+  socialMedia   Json?
+  businessHours Json?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

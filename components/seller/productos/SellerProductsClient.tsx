@@ -152,7 +152,7 @@ export default function SellerProductsClient({ products: initialProducts }: Prop
       {/* Error banner */}
       {deleteError && (
         <div className="flex items-center gap-3 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
-          <AlertCircle className="w-4 h-4 flex-shrink-0 text-red-500" />
+          <AlertCircle className="w-4 h-4 shrink-0 text-red-500" />
           {deleteError}
           <button
             onClick={() => setDeleteError(null)}

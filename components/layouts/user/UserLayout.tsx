@@ -8,9 +8,8 @@ import CategoriesSection from '@/components/user/inicio/CategoriesSection';
 import FeaturedProducts from '@/components/user/inicio/FeaturedProducts';
 import NewsletterSection from '@/components/user/inicio/NewsletterSection';
 import TestimonialsSection from '@/components/user/inicio/TestimonialsSection';
-import { PublicProduct } from '@/actions/user/product.user.action';
-import { CategoryModel } from '@/lib/types/types';
 import ChatbotWidget from '@/components/chatbotIA/ChatBotIA';
+import { PublicCategory, PublicProduct } from '@/lib/types/type.public';
 
 export const metadata: Metadata = {
   title: 'Inicio | Mat - Moda y Tecnología',
@@ -24,7 +23,7 @@ export default function UserLayoutClient({
   categories,
 }: {
   products: PublicProduct[];
-  categories: CategoryModel[];
+  categories: PublicCategory[];
 }) {
   return (
     <main className="bg-white">

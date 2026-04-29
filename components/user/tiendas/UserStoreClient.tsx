@@ -19,11 +19,16 @@ export default function UserStoreClient({ initialStores }: UserStoreClientProps)
       <main className="min-h-screen bg-white">
         {/* Hero */}
         <div className="relative bg-gray-950 overflow-hidden">
-          <div className="absolute inset-0"
-            style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.05) 1px, transparent 0)', backgroundSize: '32px 32px' }}
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage:
+                'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.05) 1px, transparent 0)',
+              backgroundSize: '32px 32px',
+            }}
           />
-          <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gray-700 to-transparent" />
-          
+          <div className="absolute bottom-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-gray-700 to-transparent" />
+
           <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
             <div className="text-center max-w-2xl mx-auto">
               <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/10 rounded-full text-xs text-gray-400 mb-6 border border-white/10">

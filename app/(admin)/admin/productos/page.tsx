@@ -13,17 +13,11 @@ import {
   Eye,
   Trash2,
   AlertCircle,
-  TrendingUp,
-  TrendingDown,
   Store,
   Clock,
-  Edit,
-  Ban,
   RefreshCw,
   Image as ImageIcon,
-  DollarSign,
   Tag,
-  Shield,
 } from 'lucide-react';
 
 type Product = {
@@ -348,9 +342,9 @@ export default function AdminProductsPage({ initialProducts = mockProducts }: Pr
           }`}
         >
           {message.type === 'success' ? (
-            <CheckCircle className="w-4 h-4 flex-shrink-0" />
+            <CheckCircle className="w-4 h-4 shrink-0" />
           ) : (
-            <AlertCircle className="w-4 h-4 flex-shrink-0" />
+            <AlertCircle className="w-4 h-4 shrink-0" />
           )}
           {message.text}
           <button onClick={() => setMessage(null)} className="ml-auto opacity-70 hover:opacity-100">
@@ -448,7 +442,7 @@ export default function AdminProductsPage({ initialProducts = mockProducts }: Pr
                   <div className="p-5">
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex items-start gap-3 flex-1 min-w-0">
-                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center flex-shrink-0">
+                        <div className="w-12 h-12 rounded-xl bg-linear-to-br from-gray-100 to-gray-200 flex items-center justify-center shrink-0">
                           {product.imageUrl ? (
                             <img
                               src={product.imageUrl}
@@ -501,7 +495,7 @@ export default function AdminProductsPage({ initialProducts = mockProducts }: Pr
                           setSelectedProduct(product);
                           setShowModal(true);
                         }}
-                        className="p-2 rounded-lg hover:bg-gray-100 transition-colors flex-shrink-0"
+                        className="p-2 rounded-lg hover:bg-gray-100 transition-colors shrink-0"
                       >
                         <Eye className="w-4 h-4 text-gray-500" />
                       </button>

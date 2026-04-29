@@ -3,9 +3,7 @@ import {
   Package,
   Tags,
   CreditCard,
-  Truck,
   Users,
-  Settings,
   BarChart3,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';

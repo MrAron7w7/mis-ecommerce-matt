@@ -42,7 +42,7 @@ export function AdminHeader({ onOpenMobileSidebar, user }: AdminHeaderProps) {
             <Menu className="w-5 h-5 text-gray-600" />
           </button>
           <div className="hidden md:flex items-center bg-gray-50 rounded-lg px-3 py-2 w-80 border border-transparent focus-within:border-emerald-300 focus-within:bg-white transition-all">
-            <Search className="w-4 h-4 text-gray-400 flex-shrink-0" />
+            <Search className="w-4 h-4 text-gray-400 shrink-0" />
             <input
               type="text"
               placeholder="Buscar productos, pedidos..."
@@ -72,7 +72,7 @@ export function AdminHeader({ onOpenMobileSidebar, user }: AdminHeaderProps) {
                 className="w-9 h-9 rounded-full object-cover shadow-md"
               />
             ) : (
-              <div className="w-9 h-9 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full flex items-center justify-center shadow-md flex-shrink-0">
+              <div className="w-9 h-9 bg-linear-to-br from-emerald-500 to-teal-600 rounded-full flex items-center justify-center shadow-md flex-shrink-0">
                 <span className="text-white text-sm font-semibold">{getInitials(user.name)}</span>
               </div>
             )}
@@ -82,7 +82,7 @@ export function AdminHeader({ onOpenMobileSidebar, user }: AdminHeaderProps) {
 
       <div className="md:hidden px-4 pb-3">
         <div className="flex items-center bg-gray-50 rounded-lg px-3 py-2 border border-transparent focus-within:border-emerald-300 focus-within:bg-white transition-all">
-          <Search className="w-4 h-4 text-gray-400 flex-shrink-0" />
+          <Search className="w-4 h-4 text-gray-400 shrink-0" />
           <input
             type="text"
             placeholder="Buscar..."

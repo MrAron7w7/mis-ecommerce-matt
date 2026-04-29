@@ -230,7 +230,7 @@ export default function CategoryForm({ defaultValues, onSuccess, onCancel }: Pro
           </div>
           <label className="relative inline-flex items-center cursor-pointer">
             <input type="checkbox" {...register('isActive')} className="sr-only peer" />
-            <div className="w-10 h-6 bg-gray-200 peer-focus:ring-2 peer-focus:ring-emerald-300 rounded-full peer peer-checked:bg-emerald-500 transition-colors after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-4" />
+            <div className="w-10 h-6 bg-gray-200 peer-focus:ring-2 peer-focus:ring-emerald-300 rounded-full peer peer-checked:bg-emerald-500 transition-colors after:content-[''] after:absolute after:top-0.5 after:left-0.5after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-4" />
           </label>
         </div>
 
