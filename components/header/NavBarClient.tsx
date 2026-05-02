@@ -6,10 +6,10 @@ import { useState, useEffect } from 'react';
 import { Search, ShoppingCart, Menu, X } from 'lucide-react';
 import UserMenu from './userMenu';
 import SearchModal from './SearchModal';
-import { PublicProduct } from '@/actions/user/product.user.action';
 import { useCartStore } from '@/store/cartStore';
 import Image from 'next/image';
 import { SessionUser } from '@/lib/types/session-user';
+import { PublicProduct } from '@/lib/types/type.public';
 
 type NavBarClientProps = {
   session: SessionUser | null;
@@ -19,68 +19,33 @@ type NavBarClientProps = {
 export default function NavBarClient({ session, products }: NavBarClientProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
-  const [itemCount, setItemCount] = useState(0);
   const pathname = usePathname();
   const { toggleCart, totalItems } = useCartStore();
 
+  const [cartCount, setCartCount] = useState(0);
   useEffect(() => {
-    setMounted(true);
-    setItemCount(totalItems());
+    setCartCount(totalItems());
   }, [totalItems]);
-
-  // Durante SSR, mostrar placeholder sin datos dinámicos
-  if (!mounted) {
-    return (
-      <div className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 lg:h-20">
-            <Link href="/" className="shrink-0">
-              <Image
-                width={100}
-                height={50}
-                src="/img/inicio/logo.png"
-                alt="Logo"
-                className="w-25 h-12.5 object-contain"
-              />
-            </Link>
-
-            <div className="hidden lg:flex items-center space-x-8">
-              <div className="text-sm font-medium text-gray-600">Productos</div>
-              <div className="text-sm font-medium text-gray-600">Tiendas</div>
-            </div>
-
-            <div className="flex items-center space-x-4 lg:space-x-6">
-              <div className="hidden sm:block">
-                <Search size={20} className="text-gray-600" />
-              </div>
-
-              <div className="relative">
-                <ShoppingCart size={20} className="text-gray-600" />
-              </div>
-
-              <div className="w-8 h-8 rounded-full bg-gray-200 animate-pulse" />
-              <div className="lg:hidden p-2">
-                <Menu size={22} className="text-gray-600" />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <>
       <nav className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 lg:h-20">
-            {/* Logo */}
+            {/* Logo — mismo truco que el footer */}
             <Link href="/" className="shrink-0">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="img/inicio/logo.png" alt="Logo" className="w-25 h-12.5 object-contain" />
+              <div className="w-25 h-12.5 relative">
+                <Image
+                  fill
+                  src="/img/inicio/logo.webp"
+                  alt="Logo"
+                  className="object-contain"
+                  priority
+                />
+              </div>
             </Link>
 
+            {/* Nav links — siempre visibles */}
             <div className="hidden lg:flex items-center space-x-8">
               <NavLink href="/" pathname={pathname}>
                 INICIO
@@ -108,9 +73,10 @@ export default function NavBarClient({ session, products }: NavBarClientProps) {
                 aria-label="Abrir carrito"
               >
                 <ShoppingCart size={20} />
-                {totalItems() > 0 && (
-                  <span className="absolute -top-2 -right-2 text-xs bg-black text-white rounded-full px-1.5 min-w-4.5 text-center">
-                    {totalItems()} {/* dinámico desde el store */}
+                {/* cartCount en vez de totalItems() — seguro en SSR */}
+                {cartCount > 0 && (
+                  <span className="absolute -top-2 -right-2 text-xs bg-black text-white rounded-full px-1.5 min-w-4.5 text-center ">
+                    {cartCount}
                   </span>
                 )}
               </button>
@@ -177,7 +143,9 @@ function MobileDrawer({ onClose, pathname }: { onClose: () => void; pathname: st
       <div className="fixed inset-0 bg-black/50 z-50" onClick={onClose} />
       <div className="fixed right-0 top-0 bottom-0 w-80 bg-white z-50 shadow-xl">
         <div className="flex justify-between items-center p-4 border-b">
-          <Image src="img/inicio/logo.png" alt="Logo" className="w-20 h-10 object-contain" />
+          <div className="w-20 h-10 relative">
+            <Image fill src="/img/inicio/logo.webp" alt="Logo" className="object-contain" />
+          </div>
           <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg">
             <X size={22} />
           </button>

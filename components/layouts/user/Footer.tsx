@@ -14,7 +14,15 @@ export default function Footer() {
           {/* Columna 1 - Logo y descripción */}
           <div>
             <Link href="/" className="inline-block mb-4">
-              <Image src="/img/inicio/logo.png" alt="Logo" width={100} height={33} />
+              <div className="w-25 h-12.5 relative">
+                <Image
+                  fill
+                  src="/img/inicio/logo.webp"
+                  alt="Logo"
+                  className="object-contain"
+                  priority // ← carga antes, evita el flash
+                />
+              </div>
             </Link>
             <p className="text-sm text-gray-400 leading-relaxed mb-4">
               Tu tienda online de confianza. Encuentra todo lo que necesitas con los mejores precios

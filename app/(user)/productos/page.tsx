@@ -3,7 +3,7 @@ import UserProductClient from '@/components/user/productos/UserProductClient';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Productos - Mis E-commerce',
+  title: 'ZonaRetail  - Productos',
   description: 'Explora nuestra selección de productos',
 };
 

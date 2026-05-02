@@ -2,9 +2,7 @@ import {
   LayoutDashboard,
   Package,
   Tags,
-  CreditCard,
   Users,
-  BarChart3,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
@@ -25,8 +23,8 @@ export const managementNavItems: NavItem[] = [
   { name: 'Solicitudes de vendedores', path: '/admin/vendedores', icon:  Users, badge: null },
   { name: 'Productos', path: '/admin/productos', icon: Package, badge: null },
   { name: 'Categorías', path: '/admin/categorias', icon: Tags, badge: null },
-  { name: 'Pedidos', path: '/admin/pedidos', icon: BarChart3, badge: null },
-  { name: 'Reportes', path: '/admin/categorias', icon:  CreditCard, badge: null },
+  //{ name: 'Pedidos', path: '/admin/pedidos', icon: BarChart3, badge: null },
+  //{ name: 'Reportes', path: '/admin/categorias', icon:  CreditCard, badge: null },
 ];
 
 export const allNavItems: NavItem[] = [...primaryNavItems, ...managementNavItems];

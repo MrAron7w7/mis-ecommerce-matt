@@ -31,7 +31,7 @@ export function SellerSidebar({ isCollapsed, onToggleCollapse }: SellerSidebarPr
           {!isCollapsed && (
             <div className="overflow-hidden">
               <span className="text-lg font-bold text-gray-900 block leading-tight">
-                Matt Innova solution
+                Panel del vendedor
               </span>
               <span className="text-xs text-emerald-600">● Online</span>
             </div>

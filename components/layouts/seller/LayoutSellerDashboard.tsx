@@ -31,7 +31,6 @@ export function LayoutSellerDashboard({ children, user }: Props) {
       <div
         className={`transition-all duration-300 ease-in-out ${isCollapsed ? 'lg:ml-20' : 'lg:ml-72'}`}
       >
-        <SellerHeader onOpenMobileSidebar={() => setSidebarOpen(true)} user={user} />
         <main className="p-6">{children}</main>
       </div>
     </div>

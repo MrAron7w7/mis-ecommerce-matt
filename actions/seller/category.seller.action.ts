@@ -24,7 +24,7 @@ export async function createCategory(
   input: CreateCategoryInput,
 ): Promise<ActionResult<{ id: number }>> {
   try {
-    await requireRole(["SELLER"]);
+    await requireRole(["ADMIN"]);
 
     const parsed = createCategorySchema.safeParse(input);
     if (!parsed.success) {
@@ -97,7 +97,7 @@ export async function updateCategory(
   input: UpdateCategoryInput
 ): Promise<ActionResult<{ id: number }>> {
   try {
-    await requireRole(["SELLER"]);
+    await requireRole(["ADMIN"]);
 
     const parsed = updateCategorySchema.safeParse(input);
     if (!parsed.success) {
@@ -193,7 +193,7 @@ export async function deleteCategory(
   input: DeleteCategoryInput
 ): Promise<ActionResult> {
   try {
-    await requireRole(["SELLER"]);
+    await requireRole(["ADMIN"]);
 
     const parsed = deleteCategorySchema.safeParse(input);
     if (!parsed.success) return { success: false, error: "ID inválido" };
@@ -227,7 +227,7 @@ export async function deleteCategory(
 
 export async function getCategories(): Promise<ActionResult<CategoryRow[]>> {
   try {
-    await requireRole(["SELLER"]);
+    await requireRole(["ADMIN"]);
 
     const categories = await prisma.category.findMany({
       include: { _count: { select: { products: true } } },
@@ -246,8 +246,8 @@ export async function getCategories(): Promise<ActionResult<CategoryRow[]>> {
         createdAt: c.createdAt.toISOString(),
       })),
     };
-  } catch  {
+  } catch   {
     //console.error("[getCategories]", error);
-    return { success: false, error: "Error interno del servidor" };
+    return { success: false, error: `Error interno del servidor` };
   }
 }

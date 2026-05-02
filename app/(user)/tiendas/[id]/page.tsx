@@ -16,6 +16,8 @@ async function page({ params }: PageProps) {
   const { id } = await params;
   const store = await getStoreBySellerId(id);
 
+  //console.log('DATOS DE LA TIENDA ::', store);
+
   if (!store) return notFound();
 
   return <UserStoreClientID store={store} />;

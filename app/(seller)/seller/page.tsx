@@ -1,9 +1,14 @@
-function page() {
+import SellerDashboardClient from '@/components/seller/SellerDashboardClient';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Dashboard | Vendedor',
+};
+
+export default async function page() {
   return (
-    <div>
-      <h1>Pagina de vendedor</h1>
-    </div>
+    <>
+      <SellerDashboardClient />
+    </>
   );
 }
-
-export default page;

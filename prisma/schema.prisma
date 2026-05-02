@@ -13,6 +13,77 @@ datasource db {
 }
 
 ////////////////////
+/// SUPPORT SYSTEM (TICKETS)
+////////////////////
+
+enum TicketStatus {
+  PENDING
+  IN_REVIEW
+  RESOLVED
+  CLOSED
+}
+
+enum TicketPriority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum TicketCategory {
+  FEATURE_PRODUCT
+  ORDER_PROBLEM
+  PAYMENT_VALIDATION
+  SHIPPING_ISSUE
+  PRODUCT_ISSUE
+  OTHER
+}
+
+model SupportTicket {
+  id           String @id @default(uuid())
+  ticketNumber String @unique // Formato: TKT-001, TKT-002...
+
+  userId   String // Vendedor que crea el ticket
+  status   TicketStatus   @default(PENDING)
+  priority TicketPriority @default(MEDIUM)
+  category TicketCategory
+
+  title       String
+  description String @db.Text
+
+  // Campos específicos según categoría
+  orderNumber String? // Para problemas con pedidos
+  productName String? // Para destacar producto o problemas con producto
+
+  attachments Json? // Array de URLs de archivos adjuntos
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relaciones
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  responses TicketResponse[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model TicketResponse {
+  id          String  @id @default(uuid())
+  ticketId    String
+  message     String  @db.Text
+  isAdmin     Boolean @default(false) // true: admin, false: vendedor
+  attachments Json? // URLs de archivos adjuntos en la respuesta
+
+  createdAt DateTime @default(now())
+
+  ticket SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  @@index([ticketId])
+  @@index([createdAt])
+}
+
+////////////////////
 /// ENUMS
 ////////////////////
 
@@ -81,6 +152,7 @@ model User {
   sellerProfile  SellerProfile?
   sellerRequests SellerRequest[]
   orderItems     OrderItem[]     @relation("SellerOrderItems")
+  supportTickets SupportTicket[]
 
   @@map("user")
 }
@@ -314,6 +386,11 @@ model CartItem {
 /// ORDERS
 ////////////////////
 
+enum DeliveryMethod {
+  DELIVERY
+  PICKUP
+}
+
 model Order {
   id                String         @id @default(uuid())
   orderNumber       String         @unique
@@ -324,6 +401,9 @@ model Order {
   paymentMethod     PaymentMethod?
   receiptUrl        String?
   paymentReceiptUrl String?        @db.Text
+
+  deliveryMethod DeliveryMethod? // Añade este enum
+  pickupStore    String? // Tienda para recojo
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

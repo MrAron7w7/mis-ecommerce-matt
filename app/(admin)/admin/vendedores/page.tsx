@@ -3,5 +3,6 @@ import AdminSellerClient from '@/components/admin/vendedores/AdminSellerClient';
 
 export default async function Page() {
   const data = await getSellerRequests();
+
   return <AdminSellerClient initialRequests={data} />;
 }

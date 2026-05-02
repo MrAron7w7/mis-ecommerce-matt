@@ -94,11 +94,12 @@ export async function registerAction(data: RegisterInput): Promise<ActionResult>
       await prisma.user.update({
         where: { id: signUpResult.user.id },
         data: {
-          name: validated.data.name,
-          lastName: validated.data.lastName,
-          documentType: validated.data.documentType,
-          documentNumber: validated.data.documentNumber,
-          phone: validated.data.phone,
+          name:           validated.data.name,
+          lastName:       validated.data.lastName,
+          // Solo guardar si tienen valor real
+          documentType:   validated.data.documentType || null,
+          documentNumber: validated.data.documentNumber || null,
+          phone:          validated.data.phone || null,
         },
       });
     }

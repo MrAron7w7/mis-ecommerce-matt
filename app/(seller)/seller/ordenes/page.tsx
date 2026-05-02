@@ -1,11 +1,7 @@
-import React from 'react';
+import { getSellerOrders } from '@/actions/seller/orders.seller.action';
+import SellerOrdersClient from '@/components/seller/ordenes/SellerOrdersClient';
 
-function page() {
-  return (
-    <div>
-      <h1>Pagina seller ordenes</h1>
-    </div>
-  );
+export default async function page() {
+  const orders = await getSellerOrders();
+  return <SellerOrdersClient initialOrders={orders} />;
 }
-
-export default page;

@@ -1,4 +1,41 @@
 -- CreateTable
+CREATE TABLE `SupportTicket` (
+    `id` VARCHAR(191) NOT NULL,
+    `ticketNumber` VARCHAR(191) NOT NULL,
+    `userId` VARCHAR(191) NOT NULL,
+    `status` ENUM('PENDING', 'IN_REVIEW', 'RESOLVED', 'CLOSED') NOT NULL DEFAULT 'PENDING',
+    `priority` ENUM('LOW', 'MEDIUM', 'HIGH') NOT NULL DEFAULT 'MEDIUM',
+    `category` ENUM('FEATURE_PRODUCT', 'ORDER_PROBLEM', 'PAYMENT_VALIDATION', 'SHIPPING_ISSUE', 'PRODUCT_ISSUE', 'OTHER') NOT NULL,
+    `title` VARCHAR(191) NOT NULL,
+    `description` TEXT NOT NULL,
+    `orderNumber` VARCHAR(191) NULL,
+    `productName` VARCHAR(191) NULL,
+    `attachments` JSON NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL,
+
+    UNIQUE INDEX `SupportTicket_ticketNumber_key`(`ticketNumber`),
+    INDEX `SupportTicket_userId_idx`(`userId`),
+    INDEX `SupportTicket_status_idx`(`status`),
+    INDEX `SupportTicket_createdAt_idx`(`createdAt`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `TicketResponse` (
+    `id` VARCHAR(191) NOT NULL,
+    `ticketId` VARCHAR(191) NOT NULL,
+    `message` TEXT NOT NULL,
+    `isAdmin` BOOLEAN NOT NULL DEFAULT false,
+    `attachments` JSON NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+
+    INDEX `TicketResponse_ticketId_idx`(`ticketId`),
+    INDEX `TicketResponse_createdAt_idx`(`createdAt`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
 CREATE TABLE `user` (
     `id` VARCHAR(191) NOT NULL,
     `name` TEXT NOT NULL,
@@ -225,6 +262,8 @@ CREATE TABLE `Order` (
     `paymentMethod` ENUM('YAPE', 'PLIN') NULL,
     `receiptUrl` VARCHAR(191) NULL,
     `paymentReceiptUrl` TEXT NULL,
+    `deliveryMethod` ENUM('DELIVERY', 'PICKUP') NULL,
+    `pickupStore` VARCHAR(191) NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
 
@@ -249,6 +288,12 @@ CREATE TABLE `OrderItem` (
     INDEX `OrderItem_productId_idx`(`productId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- AddForeignKey
+ALTER TABLE `SupportTicket` ADD CONSTRAINT `SupportTicket_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `user`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `TicketResponse` ADD CONSTRAINT `TicketResponse_ticketId_fkey` FOREIGN KEY (`ticketId`) REFERENCES `SupportTicket`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `session` ADD CONSTRAINT `session_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `user`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;

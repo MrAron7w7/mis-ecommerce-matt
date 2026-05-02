@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // ====================
 // type.public.ts
 // Tipos que se exponen al frontend (usuarios).
@@ -60,4 +61,26 @@ export type PublicReview = {
     name: string;
     image: string | null;
   };
+};
+
+export type SellerRequestAdminView = {
+  id: string;
+  userId: string;
+  userName: string;
+  userEmail: string;
+  userAvatar: string | null;
+  businessName: string;
+  businessType: string;
+  taxId: string;
+  phone: string;
+  address: string;
+  documents: any[];
+  status: 'pending' | 'approved' | 'rejected';
+  submittedAt: string;
+  reviewedAt?: string;
+  experience: string;
+  reviewNotes: string;
+  // 👇 Añade estos campos
+  formattedDate: string;
+  formattedFullDate: string;
 };

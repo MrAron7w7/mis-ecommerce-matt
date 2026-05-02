@@ -14,14 +14,8 @@ export const registerSchema = z
     name: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
     lastName: z.string().min(2, 'El apellido debe tener al menos 2 caracteres'),
     email: z.string().email('Correo electrónico inválido'),
-    documentType: z.enum(
-      documentTypes,
-      `El tipo de documento debe ser uno de: ${documentTypes.join(', ')}`
-    ),
-    documentNumber: z
-      .string()
-      .min(6, 'El número de documento debe tener al menos 6 caracteres')
-      .max(12, 'El número de documento no puede tener más de 12 caracteres'),
+    documentType:   z.string().optional().or(z.literal('')),
+    documentNumber: z.string().optional().or(z.literal('')),
     phone: z
       .string()
       .min(8, 'El número de celular debe tener al menos 8 dígitos')

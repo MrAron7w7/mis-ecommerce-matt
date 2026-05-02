@@ -13,6 +13,11 @@ export type Store = {
   totalSales?: number;
   rating?: number;
   since: string;
+  phone: string | null;
+  address: string | null;
+  website: string | null;
+  socialMedia: Record<string, { url: string; enabled: boolean }> | null;
+  businessHours: Record<string, { open: string; close: string; isOpen: boolean }> | null;
 
   storeName: string | null;
   storeLogo: string | null;
@@ -86,6 +91,21 @@ export async function getStores(): Promise<Store[]> {
     image: seller.image,
     productCount: seller.products.length,
     since: seller.createdAt.toISOString(),
+    address: seller.sellerProfile?.address ?? null,
+    website: seller.sellerProfile?.website ?? null,
+    socialMedia:
+      (seller.sellerProfile?.socialMedia as Record<string, { url: string; enabled: boolean }>) ??
+      null,
+    businessHours:
+      (seller.sellerProfile?.businessHours as Record<
+        string,
+        { open: string; close: string; isOpen: boolean }
+      >) ?? null,
+    phone: seller.sellerProfile?.phone ?? null,
+    storeName: seller.sellerProfile?.storeName ?? null,
+    storeLogo: seller.sellerProfile?.logo ?? null,
+    storeCover: seller.sellerProfile?.coverImage ?? null,
+    description: seller.sellerProfile?.description ?? null,
     products: seller.products.map((product) => ({
       id: Number(product.id),
       name: product.name,
@@ -94,10 +114,6 @@ export async function getStores(): Promise<Store[]> {
       imageUrl: product.imageUrl,
       stock: product.stock,
     })),
-    storeName: seller.sellerProfile?.storeName ?? null,
-    storeLogo: seller.sellerProfile?.logo ?? null,
-    storeCover: seller.sellerProfile?.coverImage ?? null,
-    description: seller.sellerProfile?.description ?? null,
   }));
 }
 
@@ -167,11 +183,22 @@ export async function getStoreBySellerId(sellerId: string): Promise<Store | null
       imageUrl: product.imageUrl,
       stock: product.stock,
     })),
+    phone: seller.sellerProfile?.phone ?? null,
 
     storeName: seller.sellerProfile?.storeName ?? null,
     storeLogo: seller.sellerProfile?.logo ?? null,
     storeCover: seller.sellerProfile?.coverImage ?? null,
     description: seller.sellerProfile?.description ?? null,
+    socialMedia:
+      (seller.sellerProfile?.socialMedia as Record<string, { url: string; enabled: boolean }>) ??
+      null,
+    businessHours:
+      (seller.sellerProfile?.businessHours as Record<
+        string,
+        { open: string; close: string; isOpen: boolean }
+      >) ?? null,
+    address: seller.sellerProfile?.address ?? null,
+    website: seller.sellerProfile?.website ?? null,
   };
 }
 

@@ -3,18 +3,7 @@
 
 import { useEffect, useRef } from 'react';
 import Link from 'next/link';
-import {
-  User,
-  Settings,
-  ShoppingBag,
-  Heart,
-  LogOut,
-  LayoutDashboard,
-  Package,
-  BarChart3,
-  Truck,
-  Users,
-} from 'lucide-react';
+import { User, Settings, ShoppingBag, Heart, LogOut, LayoutDashboard } from 'lucide-react';
 
 type User = {
   id?: string;
@@ -70,15 +59,15 @@ export default function UserDropdown({ user, onClose, onLogout }: UserDropdownPr
 
     SELLER: [
       { href: '/seller/', label: 'Dashboard Vendedor', icon: LayoutDashboard },
-      { href: '/seller/productos', label: 'Mis Productos', icon: Package },
-      { href: '/seller/ventas', label: 'Mis Ventas', icon: BarChart3 },
-      { href: '/seller/ordenes', label: 'Órdenes', icon: Truck },
+      //{ href: '/seller/productos', label: 'Mis Productos', icon: Package },
+      //{ href: '/seller/ventas', label: 'Mis Ventas', icon: BarChart3 },
+      //{ href: '/seller/ordenes', label: 'Órdenes', icon: Truck },
     ],
 
     ADMIN: [
       { href: '/admin/', label: 'Dashboard Admin', icon: LayoutDashboard },
-      { href: '/admin/usuarios', label: 'Usuarios', icon: Users },
-      { href: '/admin/configuracion', label: 'Configuración', icon: Settings },
+      //{ href: '/admin/usuarios', label: 'Usuarios', icon: Users },
+      //{ href: '/admin/configuracion', label: 'Configuración', icon: Settings },
     ],
   };
 

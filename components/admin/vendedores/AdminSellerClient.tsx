@@ -21,11 +21,13 @@ import {
   CreditCard,
   MessageSquare,
   Image as ImageIcon,
+  Loader2,
 } from 'lucide-react';
-import { SellerRequestAdminView } from '@/lib/types/type-models';
 import { approveSeller } from '@/actions/admin/vendedores/approve-seller.action';
 import { rejectSeller } from '@/actions/admin/vendedores/reject-seller.action';
 import { useToast } from '@/components/ui/custom-toast';
+import { SellerRequestAdminView } from '@/lib/types/type.public';
+import { useSellerRequestsStore } from '@/store/notification-store';
 
 type Props = {
   initialRequests?: SellerRequestAdminView[];
@@ -45,6 +47,7 @@ export default function AdminSellerClient({ initialRequests }: Props) {
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [processingId, setProcessingId] = useState<string | null>(null);
+  const [isApproving, setIsApproving] = useState(false); // 👈 Estado para aprobación
 
   const itemsPerPage = 4;
 
@@ -64,17 +67,6 @@ export default function AdminSellerClient({ initialRequests }: Props) {
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage,
   );
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat('es-PE', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    }).format(date);
-  };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -105,12 +97,18 @@ export default function AdminSellerClient({ initialRequests }: Props) {
     }
   };
 
+  const decrement = useSellerRequestsStore((s) => s.decrement);
+
   const handleApprove = async (request: SellerRequestAdminView) => {
+    if (isApproving) return; // 👈 Evita múltiples clics
+
     try {
+      setIsApproving(true); // 👈 Activar carga
       setProcessingId(request.id);
 
       await approveSeller(request.id);
 
+      // Actualizar estado local
       setRequests((prev) =>
         prev.map((r) =>
           r.id === request.id
@@ -118,9 +116,22 @@ export default function AdminSellerClient({ initialRequests }: Props) {
             : r,
         ),
       );
+
+      await approveSeller(request.id);
+      decrement(request.id); // 👈 ahora pasa el id
+
+      toast.success(`Solicitud de ${request.businessName} aprobada correctamente.`);
+
+      // 👈 Cerrar modales y limpiar selección
+      setShowModal(false);
+      setSelectedRequest(null);
+      setShowRejectModal(false);
+      setRejectionReason('');
     } catch (error) {
       console.error(error);
+      toast.error('Error al aprobar la solicitud. Inténtalo de nuevo.');
     } finally {
+      setIsApproving(false); // 👈 Desactivar carga
       setProcessingId(null);
     }
   };
@@ -136,7 +147,7 @@ export default function AdminSellerClient({ initialRequests }: Props) {
 
       await rejectSeller(request.id, rejectionReason);
 
-      // ✅ UPDATE UI (optimista)
+      // Actualizar UI optimista
       setRequests((prev) =>
         prev.map((req) =>
           req.id === request.id
@@ -150,19 +161,21 @@ export default function AdminSellerClient({ initialRequests }: Props) {
         ),
       );
 
+      await rejectSeller(request.id, rejectionReason);
+      decrement(request.id); // 👈 igual aquí
+
       toast.success(`Solicitud de ${request.businessName} rechazada correctamente.`);
 
+      // 👈 Cerrar modales y limpiar
       setRejectionReason('');
       setShowRejectModal(false);
       setSelectedRequest(null);
       setShowModal(false);
     } catch (error) {
       console.error(error);
-
       toast.error('Error al rechazar la solicitud. Inténtalo de nuevo.');
     } finally {
       setProcessingId(null);
-      setTimeout(() => setMessage(null), 4000);
     }
   };
 
@@ -179,7 +192,7 @@ export default function AdminSellerClient({ initialRequests }: Props) {
 
   return (
     <div className="space-y-6">
-      {/* Page header */}
+      {/* Page header - igual */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center">
@@ -189,7 +202,6 @@ export default function AdminSellerClient({ initialRequests }: Props) {
             <h1 className="text-xl font-bold text-gray-900">Solicitudes de vendedores</h1>
             <p className="text-sm text-gray-500">
               {requests.length} solicitud{requests.length !== 1 ? 'es' : ''} total
-              {requests.length !== 1 ? 'es' : ''}
               {pendingCount > 0 && (
                 <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-700">
                   {pendingCount} pendiente{pendingCount !== 1 ? 's' : ''}
@@ -221,7 +233,7 @@ export default function AdminSellerClient({ initialRequests }: Props) {
         </div>
       )}
 
-      {/* Filters */}
+      {/* Filters - igual */}
       <div className="bg-white rounded-xl border border-gray-200 p-4">
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="flex-1 relative">
@@ -280,7 +292,7 @@ export default function AdminSellerClient({ initialRequests }: Props) {
         </div>
       </div>
 
-      {/* Requests Grid */}
+      {/* Requests Grid - igual pero con formattedDate */}
       {requests.length === 0 ? (
         <div className="bg-white rounded-2xl border border-gray-200 shadow-sm">
           <div className="flex flex-col items-center justify-center py-20 text-center px-6">
@@ -317,9 +329,8 @@ export default function AdminSellerClient({ initialRequests }: Props) {
                 >
                   <div className="p-6">
                     <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-                      {/* Left side - User info */}
                       <div className="flex items-start gap-4 flex-1">
-                        <div className="w-12 h-12 rounded-xl bg-linear-to-br from-emerald-100 to-emerald-200 flex items-center justify-center flex-shrink-0">
+                        <div className="w-12 h-12 rounded-xl bg-linear-to-br from-emerald-100 to-emerald-200 flex items-center justify-center shrink-0">
                           {request.userAvatar ? (
                             <img
                               src={request.userAvatar}
@@ -361,13 +372,12 @@ export default function AdminSellerClient({ initialRequests }: Props) {
                             </span>
                             <span className="flex items-center gap-1 text-gray-500">
                               <Calendar className="w-3.5 h-3.5" />
-                              Solicitado: {formatDate(request.submittedAt).split(',')[0]}
+                              Solicitado: {request.formattedDate}
                             </span>
                           </div>
                         </div>
                       </div>
 
-                      {/* Right side - Actions */}
                       <div className="flex gap-2">
                         <button
                           onClick={() => {
@@ -426,11 +436,11 @@ export default function AdminSellerClient({ initialRequests }: Props) {
         </>
       )}
 
-      {/* Modal para revisar solicitud */}
+      {/* Modal para revisar solicitud - ACTUALIZADO */}
       {showModal && selectedRequest && (
         <div
           className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
-          onClick={() => setShowModal(false)}
+          onClick={() => !isApproving && setShowModal(false)} // 👈 Evita cerrar mientras carga
         >
           <div
             className="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto"
@@ -444,15 +454,16 @@ export default function AdminSellerClient({ initialRequests }: Props) {
                 <h2 className="text-lg font-bold text-gray-900">Revisar solicitud</h2>
               </div>
               <button
-                onClick={() => setShowModal(false)}
-                className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                onClick={() => !isApproving && setShowModal(false)} // 👈 Evita cerrar mientras carga
+                disabled={isApproving}
+                className="p-2 rounded-lg hover:bg-gray-100 transition-colors disabled:opacity-50"
               >
                 <X className="w-5 h-5 text-gray-500" />
               </button>
             </div>
 
             <div className="p-6 space-y-6">
-              {/* Información del negocio */}
+              {/* Información del negocio - igual */}
               <div>
                 <h3 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
                   <Building2 className="w-4 h-4 text-emerald-600" />
@@ -526,24 +537,33 @@ export default function AdminSellerClient({ initialRequests }: Props) {
                 </div>
               </div>
 
-              {/* Acciones */}
+              {/* Acciones - ACTUALIZADO con mejor estado de carga */}
               {selectedRequest.status === 'pending' && (
                 <div className="border-t border-gray-200 pt-6 flex flex-col sm:flex-row gap-3 justify-end">
                   <button
                     onClick={() => setShowRejectModal(true)}
-                    disabled={processingId === selectedRequest.id}
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white border border-red-300 text-red-600 hover:bg-red-50 font-medium transition-all disabled:opacity-50"
+                    disabled={isApproving || processingId === selectedRequest.id}
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white border border-red-300 text-red-600 hover:bg-red-50 font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <XCircle className="w-4 h-4" />
                     Rechazar
                   </button>
                   <button
                     onClick={() => handleApprove(selectedRequest)}
-                    disabled={processingId === selectedRequest.id}
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-medium transition-all disabled:opacity-50"
+                    disabled={isApproving || processingId === selectedRequest.id}
+                    className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed min-w-35"
                   >
-                    <CheckCircle className="w-4 h-4" />
-                    {processingId === selectedRequest.id ? 'Procesando...' : 'Aprobar solicitud'}
+                    {isApproving && processingId === selectedRequest.id ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Aprobando...
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircle className="w-4 h-4" />
+                        Aprobar solicitud
+                      </>
+                    )}
                   </button>
                 </div>
               )}
@@ -554,7 +574,7 @@ export default function AdminSellerClient({ initialRequests }: Props) {
                     <div className="flex items-center gap-2 p-3 bg-emerald-50 rounded-xl text-emerald-700">
                       <CheckCircle className="w-4 h-4" />
                       <span className="text-sm">
-                        Esta solicitud fue aprobada el {formatDate(selectedRequest.reviewedAt!)}
+                        Esta solicitud fue aprobada el {selectedRequest.formattedFullDate}
                       </span>
                     </div>
                   ) : (
@@ -562,7 +582,7 @@ export default function AdminSellerClient({ initialRequests }: Props) {
                       <div className="flex items-center gap-2 p-3 bg-red-50 rounded-xl text-red-700">
                         <XCircle className="w-4 h-4" />
                         <span className="text-sm">
-                          Esta solicitud fue rechazada el {formatDate(selectedRequest.reviewedAt!)}
+                          Esta solicitud fue rechazada el {selectedRequest.formattedFullDate}
                         </span>
                       </div>
                       {selectedRequest.reviewNotes && (
@@ -580,11 +600,11 @@ export default function AdminSellerClient({ initialRequests }: Props) {
         </div>
       )}
 
-      {/* Modal de rechazo con feedback */}
+      {/* Modal de rechazo - ACTUALIZADO */}
       {showRejectModal && selectedRequest && (
         <div
           className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
-          onClick={() => setShowRejectModal(false)}
+          onClick={() => !processingId && setShowRejectModal(false)}
         >
           <div
             className="bg-white rounded-2xl max-w-md w-full"
@@ -605,21 +625,31 @@ export default function AdminSellerClient({ initialRequests }: Props) {
                 value={rejectionReason}
                 onChange={(e) => setRejectionReason(e.target.value)}
                 rows={4}
-                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-red-400 focus:ring-2 focus:ring-red-200 outline-none transition-all resize-none"
+                disabled={processingId === selectedRequest.id}
+                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-red-400 focus:ring-2 focus:ring-red-200 outline-none transition-all resize-none disabled:bg-gray-50 disabled:text-gray-500"
                 placeholder="Ej: Documentación incompleta, no cumple con los requisitos mínimos..."
               />
               <div className="flex gap-3 mt-6">
                 <button
                   onClick={() => setShowRejectModal(false)}
-                  className="flex-1 px-4 py-2.5 rounded-xl bg-gray-100 text-gray-700 hover:bg-gray-200 font-medium transition-all"
+                  disabled={processingId === selectedRequest.id}
+                  className="flex-1 px-4 py-2.5 rounded-xl bg-gray-100 text-gray-700 hover:bg-gray-200 font-medium transition-all disabled:opacity-50"
                 >
                   Cancelar
                 </button>
                 <button
                   onClick={() => handleReject(selectedRequest)}
-                  className="flex-1 px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-medium transition-all"
+                  disabled={processingId === selectedRequest.id || !rejectionReason.trim()}
+                  className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-medium transition-all disabled:opacity-50"
                 >
-                  Rechazar
+                  {processingId === selectedRequest.id ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Rechazando...
+                    </>
+                  ) : (
+                    'Rechazar'
+                  )}
                 </button>
               </div>
             </div>

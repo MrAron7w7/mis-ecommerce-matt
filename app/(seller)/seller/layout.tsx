@@ -1,4 +1,5 @@
 import { LayoutSellerDashboard } from '@/components/layouts/seller/LayoutSellerDashboard';
+import { ToastProvider } from '@/components/ui/custom-toast';
 import { requireRole } from '@/lib/helpers/session';
 
 export default async function SellerLayout({ children }: { children: React.ReactNode }) {
@@ -16,5 +17,9 @@ export default async function SellerLayout({ children }: { children: React.React
     role: session.user.role,
   };
 
-  return <LayoutSellerDashboard user={user}>{children}</LayoutSellerDashboard>;
+  return (
+    <ToastProvider>
+      <LayoutSellerDashboard user={user}>{children}</LayoutSellerDashboard>
+    </ToastProvider>
+  );
 }

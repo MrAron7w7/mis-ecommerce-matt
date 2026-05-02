@@ -3,6 +3,8 @@ import SellerProductsClient from '@/components/seller/productos/SellerProductsCl
 import { requireRole } from '@/lib/helpers/session';
 import { redirect } from 'next/navigation';
 
+
+
 export default async function SellerProductsPage() {
   await requireRole(['SELLER']);
 

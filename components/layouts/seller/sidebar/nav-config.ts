@@ -1,12 +1,10 @@
 import {
   LayoutDashboard,
   Package,
-  Tags,
   CreditCard,
   Truck,
   Users,
   Settings,
-  Send,
   Settings2,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
@@ -21,10 +19,15 @@ export interface NavItem {
 export const primaryNavItems: NavItem[] = [
   { name: 'Dashboard', path: '/seller', icon: LayoutDashboard, badge: null },
   { name: 'Gestión de productos', path: '/seller/productos', icon: Package, badge: null },
-  { name: 'Categorías', path: '/seller/categorias', icon: Tags, badge: null },
+  //{ name: 'Categorías', path: '/seller/categorias', icon: Tags, badge: null },
   { name: 'Órdenes', path: '/seller/ordenes', icon: CreditCard, badge: null },
-  { name: 'Gestión de perfil de tienda', path: '/seller/gestion-perfil', icon: Settings2, badge: null },
-  { name: 'Solicitudes', path: '/seller/solicitudes', icon:  Send, badge: null },
+  {
+    name: 'Gestión de perfil de tienda',
+    path: '/seller/gestion-perfil',
+    icon: Settings2,
+    badge: null,
+  },
+  //{ name: 'Solicitudes', path: '/seller/solicitudes', icon:  Send, badge: null },
 ];
 
 export const managementNavItems: NavItem[] = [
