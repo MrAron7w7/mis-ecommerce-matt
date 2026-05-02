@@ -4,6 +4,7 @@
 import { useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { User, Settings, ShoppingBag, Heart, LogOut, LayoutDashboard } from 'lucide-react';
+import Image from 'next/image';
 
 type User = {
   id?: string;
@@ -97,9 +98,19 @@ export default function UserDropdown({ user, onClose, onLogout }: UserDropdownPr
         <div className="p-4 bg-linear-to-r from-gray-50 to-white border-b border-gray-100">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-full bg-gray-900 text-white flex items-center justify-center">
-              <span className="text-lg font-medium">
-                {user.name?.charAt(0).toUpperCase() || user.email?.charAt(0).toUpperCase() || 'U'}
-              </span>
+              {user.image ? (
+                <Image
+                  src={user.image}
+                  alt={user.name || 'Avatar'}
+                  width={48}
+                  height={48}
+                  className="w-full h-full object-cover rounded-full"
+                />
+              ) : (
+                <span className="text-lg font-medium text-white">
+                  {user.name?.charAt(0).toUpperCase() || user.email?.charAt(0).toUpperCase() || 'U'}
+                </span>
+              )}
             </div>
             <div className="flex-1 min-w-0">
               <p className="font-medium text-gray-900 truncate">{user.name || 'Usuario'}</p>

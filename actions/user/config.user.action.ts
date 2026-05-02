@@ -1,5 +1,6 @@
 'use server';
 
+import { deleteImage, saveImage } from '@/lib/helpers/save-image-helper';
 import { requireSession } from '@/lib/helpers/session';
 import prisma from '@/lib/prisma';
 

@@ -13,6 +13,7 @@ import {
   Loader2,
 } from 'lucide-react';
 import Image from 'next/image';
+import { updateAvatar } from '@/actions/general/update.profile.action';
 
 type UserConfig = {
   name?: string | null;
@@ -56,16 +57,23 @@ export default function ProfileSettingsPage({ initialConfig }: { initialConfig: 
   );
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-  const handleProfileImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleProfileImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      setSelectedFile(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setProfileImage(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
+    if (!file) return;
+
+    // Mostrar preview inmediato
+    const reader = new FileReader();
+    reader.onloadend = async () => {
+      const base64 = reader.result as string;
+      setProfileImage(base64); // preview local
+
+      // Guardar en servidor
+      const result = await updateAvatar(base64);
+      if (result.success) {
+        setProfileImage(result.imagePath); // actualizar con la URL real
+      }
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleProfileSubmit = async (e: React.FormEvent) => {
@@ -355,7 +363,9 @@ export default function ProfileSettingsPage({ initialConfig }: { initialConfig: 
                       type="tel"
                       required
                       value={sellerRequest.phone}
-                      onChange={(e) => setSellerRequest({ ...sellerRequest, phone: e.target.value })}
+                      onChange={(e) =>
+                        setSellerRequest({ ...sellerRequest, phone: e.target.value })
+                      }
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
                       placeholder="+51 987 654 321"
                     />
@@ -368,7 +378,9 @@ export default function ProfileSettingsPage({ initialConfig }: { initialConfig: 
                       type="text"
                       required
                       value={sellerRequest.taxId}
-                      onChange={(e) => setSellerRequest({ ...sellerRequest, taxId: e.target.value })}
+                      onChange={(e) =>
+                        setSellerRequest({ ...sellerRequest, taxId: e.target.value })
+                      }
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
                       placeholder="20XXXXXXXXX"
                     />
@@ -390,7 +402,9 @@ export default function ProfileSettingsPage({ initialConfig }: { initialConfig: 
                     type="text"
                     required
                     value={sellerRequest.address}
-                    onChange={(e) => setSellerRequest({ ...sellerRequest, address: e.target.value })}
+                    onChange={(e) =>
+                      setSellerRequest({ ...sellerRequest, address: e.target.value })
+                    }
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
                     placeholder="Av. Principal 123, Lima, Perú"
                   />

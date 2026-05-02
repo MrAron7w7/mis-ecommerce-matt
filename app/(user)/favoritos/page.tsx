@@ -1,12 +1,15 @@
 import Navbar from '@/components/header/Navbar';
 import Footer from '@/components/layouts/user/Footer';
+import UserFavoriteClient from '@/components/user/favoritos/UserFavoriteClient';
 import React from 'react';
 
 function page() {
   return (
-    <div>
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       <Navbar />
-      <h1>favoritos</h1>
+      <div className="grow">
+        <UserFavoriteClient />
+      </div>
       <Footer />
     </div>
   );

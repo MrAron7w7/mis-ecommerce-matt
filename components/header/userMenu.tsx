@@ -7,6 +7,7 @@ import UserDropdown from './UserDropdown';
 import { useModal } from './ModalProvider';
 import { SessionUser } from '@/lib/types/session-user';
 import { toUserRole } from '@/lib/types/auth-model';
+import Image from 'next/image';
 
 type UserMenuProps = {
   session: SessionUser | null;
@@ -42,7 +43,21 @@ export default function UserMenu({ session }: UserMenuProps) {
         className="flex items-center gap-2 hover:opacity-70 transition px-2 py-1 rounded-lg hover:bg-gray-100"
         aria-label="Menú de usuario"
       >
-        <User size={20} />
+        {/* Avatar o icono */}
+        <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center shrink-0 border border-gray-200">
+          {isAuthenticated && user.image ? (
+            <Image
+              src={user.image}
+              alt={displayName || 'Avatar'}
+              width={32}
+              height={32}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <User size={16} className="text-gray-500" />
+          )}
+        </div>
+
         {isAuthenticated && displayName && (
           <>
             <span className="hidden md:block text-sm font-medium text-gray-700">
