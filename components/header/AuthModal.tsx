@@ -1,13 +1,13 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { X, Mail, Lock, Eye, EyeOff, ShoppingBag } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { loginSchema, LoginInput } from '@/lib/schemas/auth.schema';
 import { loginAction } from '@/actions/auth/auth.action';
-import LogoutButton from '../auth/logout-button';
+import { LogoutModal } from '../ui/logout-modal';
 
 type AuthModalProps = {
   open: boolean;
@@ -18,89 +18,17 @@ type AuthModalProps = {
 export default function AuthModal({ open, setOpen, action }: AuthModalProps) {
   const router = useRouter();
 
-  // ESC CLOSE
-  useEffect(() => {
-    const handleEsc = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setOpen(false);
-    };
-
-    if (open) {
-      window.addEventListener('keydown', handleEsc);
-    }
-    return () => window.removeEventListener('keydown', handleEsc);
-  }, [open, setOpen]);
-
-  // BLOCK SCROLL
-  useEffect(() => {
-    if (open) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'auto';
-    }
-    return () => {
-      document.body.style.overflow = 'auto';
-    };
-  }, [open]);
-
   if (!open) return null;
 
   // Modal de logout
   if (action === 'logout') {
-    return (
-      <div
-        className="fixed inset-0 bg-black/50 z-[9999] flex items-center justify-center p-4"
-        onClick={() => setOpen(false)}
-      >
-        <div
-          role="dialog"
-          aria-modal="true"
-          className="bg-white rounded-2xl w-full max-w-md shadow-2xl relative animate-in zoom-in duration-200"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <button
-            onClick={() => setOpen(false)}
-            className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition"
-          >
-            <X size={20} />
-          </button>
-
-          <div className="p-8 text-center">
-            <div className="w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
-              <svg
-                className="w-8 h-8 text-red-500"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-                />
-              </svg>
-            </div>
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">Cerrar sesión</h2>
-            <p className="text-gray-500 mb-6">¿Seguro que deseas cerrar sesión?</p>
-            <div className="flex gap-3 justify-center">
-              <button
-                onClick={() => setOpen(false)}
-                className="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
-              >
-                Cancelar
-              </button>
-              <LogoutButton onSuccess={() => setOpen(false)} />
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+    return <LogoutModal isOpen={open} onClose={() => setOpen(false)} />;
   }
 
   // Modal de login
   return (
     <div
-      className="fixed inset-0 bg-black/50 z-[9999] flex items-center justify-center p-4"
+      className="fixed inset-0 bg-black/50 z-9999 flex items-center justify-center p-4"
       onClick={() => setOpen(false)}
     >
       <div

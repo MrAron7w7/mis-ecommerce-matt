@@ -48,7 +48,7 @@ export default function UserDropdown({ user, onClose, onLogout }: UserDropdownPr
 
   // Opciones comunes para todos los usuarios
   const commonLinks = [
-    { href: '/perfil', label: 'Mi Perfil', icon: User },
+    //{ href: '/perfil', label: 'Mi Perfil', icon: User },
     { href: '/mis-compras', label: 'Mis Compras', icon: ShoppingBag },
     { href: '/favoritos', label: 'Favoritos', icon: Heart },
     { href: '/configuracion', label: 'Configuración', icon: Settings },

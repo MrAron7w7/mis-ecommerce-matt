@@ -1,14 +1,10 @@
-"use server";
+'use server';
 
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
-import {
-  loginSchema,
-  registerSchema,
-  LoginInput,
-  RegisterInput,
-} from "@/lib/schemas/auth.schema";
-import prisma from "@/lib/prisma";
+import { auth } from '@/lib/auth';
+import { headers } from 'next/headers';
+import { loginSchema, registerSchema, LoginInput, RegisterInput } from '@/lib/schemas/auth.schema';
+import prisma from '@/lib/prisma';
+import { redirect } from 'next/navigation';
 
 type ActionResult = { success: true; error?: never } | { success?: never; error: string };
 
@@ -33,7 +29,7 @@ export async function loginAction(data: LoginInput): Promise<ActionResult> {
     if (error instanceof Error) {
       return { error: error.message };
     }
-    return { error: "Credenciales incorrectas" };
+    return { error: 'Credenciales incorrectas' };
   }
 }
 
@@ -51,7 +47,7 @@ export async function registerAction(data: RegisterInput): Promise<ActionResult>
     });
 
     if (existingUser) {
-      return { error: "Este correo electrónico ya está registrado" };
+      return { error: 'Este correo electrónico ya está registrado' };
     }
 
     // 2. Verificar si ya existe el número de documento
@@ -61,7 +57,7 @@ export async function registerAction(data: RegisterInput): Promise<ActionResult>
       });
 
       if (existingDocument) {
-        return { error: "Este número de documento ya está registrado" };
+        return { error: 'Este número de documento ya está registrado' };
       }
     }
 
@@ -72,14 +68,14 @@ export async function registerAction(data: RegisterInput): Promise<ActionResult>
       });
 
       if (existingPhone) {
-        return { error: "Este número de celular ya está registrado" };
+        return { error: 'Este número de celular ya está registrado' };
       }
     }
 
     // 4. Crear el usuario con todos los campos usando Better Auth
     // Nota: Better Auth por defecto solo maneja name, email y password
     // Necesitamos crear el usuario primero y luego actualizar con campos adicionales
-    
+
     const signUpResult = await auth.api.signUpEmail({
       body: {
         name: `${validated.data.name} ${validated.data.lastName}`, // Combinamos nombre y apellido
@@ -94,23 +90,23 @@ export async function registerAction(data: RegisterInput): Promise<ActionResult>
       await prisma.user.update({
         where: { id: signUpResult.user.id },
         data: {
-          name:           validated.data.name,
-          lastName:       validated.data.lastName,
+          name: validated.data.name,
+          lastName: validated.data.lastName,
           // Solo guardar si tienen valor real
-          documentType:   validated.data.documentType || null,
+          documentType: validated.data.documentType || null,
           documentNumber: validated.data.documentNumber || null,
-          phone:          validated.data.phone || null,
+          phone: validated.data.phone || null,
         },
       });
     }
 
     return { success: true };
   } catch (error) {
-    console.error("Error en registro:", error);
+    console.error('Error en registro:', error);
     if (error instanceof Error) {
       return { error: error.message };
     }
-    return { error: "Error al registrar usuario" };
+    return { error: 'Error al registrar usuario' };
   }
 }
 
@@ -119,11 +115,10 @@ export async function logoutAction(): Promise<ActionResult> {
     await auth.api.signOut({
       headers: await headers(),
     });
+
     return { success: true };
   } catch (error) {
-    if (error instanceof Error) {
-      return { error: error.message };
-    }
-    return { error: "Error al cerrar sesión" };
+    console.error('Error al cerrar sesión:', error);
+    return { error: 'Error al cerrar sesión' };
   }
 }

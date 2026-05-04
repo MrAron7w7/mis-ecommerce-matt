@@ -2,6 +2,12 @@ import { getPendingSellerCountAction } from '@/actions/admin/notificaciones/get-
 import { SellerRequestsProvider } from '@/components/admin/seller-requests-provider';
 import { LayoutAdminDashboard } from '@/components/layouts/admin/LayoutAdminDashboard';
 import { requireRole } from '@/lib/helpers/session';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Dashboard | Admin',
+  description: 'Administrar dashboard',
+};
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await requireRole(['ADMIN']);

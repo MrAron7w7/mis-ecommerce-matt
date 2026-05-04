@@ -1,6 +1,7 @@
 'use client';
 
 import { Menu, Search, Bell } from 'lucide-react';
+import Image from 'next/image';
 
 interface SessionUser {
   name: string;
@@ -66,7 +67,10 @@ export function SellerHeader({ onOpenMobileSidebar, user }: SellerHeaderProps) {
               <p className="text-xs text-gray-500">{roleLabels[user.role ?? ''] ?? 'Usuario'}</p>
             </div>
             {user.image ? (
-              <img
+              <Image
+                width={36}
+                height={36}
+                priority
                 src={user.image}
                 alt={user.name}
                 className="w-9 h-9 rounded-full object-cover shadow-md"
