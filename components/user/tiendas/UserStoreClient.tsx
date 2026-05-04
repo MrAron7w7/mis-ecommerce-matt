@@ -3,6 +3,7 @@ import Footer from '@/components/layouts/user/Footer';
 import { Store } from '@/actions/user/store.user.action';
 import StoreFilters from './StoreFilters';
 import StoreGrid from './StoreGrid';
+import { Suspense } from 'react';
 
 type UserStoreClientProps = {
   initialStores: Store[];
@@ -57,8 +58,12 @@ export default function UserStoreClient({ initialStores }: UserStoreClientProps)
           </div>
         </div>
 
-        <StoreFilters />
-        <StoreGrid stores={stores} />
+        <Suspense fallback={<div>Loading filters...</div>}>
+          <StoreFilters />
+        </Suspense>
+        <Suspense fallback={<div>Loading stores...</div>}>
+          <StoreGrid stores={stores} />
+        </Suspense>
       </main>
       <Footer />
     </>

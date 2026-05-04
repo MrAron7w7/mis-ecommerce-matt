@@ -4,7 +4,6 @@ import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
 import { loginSchema, registerSchema, LoginInput, RegisterInput } from '@/lib/schemas/auth.schema';
 import prisma from '@/lib/prisma';
-import { redirect } from 'next/navigation';
 
 type ActionResult = { success: true; error?: never } | { success?: never; error: string };
 
@@ -93,7 +92,6 @@ export async function registerAction(data: RegisterInput): Promise<ActionResult>
           name: validated.data.name,
           lastName: validated.data.lastName,
           // Solo guardar si tienen valor real
-          documentType: validated.data.documentType || null,
           documentNumber: validated.data.documentNumber || null,
           phone: validated.data.phone || null,
         },

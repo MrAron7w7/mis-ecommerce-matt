@@ -3,5 +3,6 @@ import SellerOrdersClient from '@/components/seller/ordenes/SellerOrdersClient';
 
 export default async function page() {
   const orders = await getSellerOrders();
+  console.log('ORDENES::::', orders);
   return <SellerOrdersClient initialOrders={orders} />;
 }
